@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.example.demo1.AccountQueryParameter;
 import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.AccountRequest;

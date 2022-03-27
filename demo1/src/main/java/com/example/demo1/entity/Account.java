@@ -55,7 +55,7 @@ public class Account {
     @JoinTable(
     		  name = "accounts_roles", 
     		  joinColumns = {@JoinColumn(name = "account_id", referencedColumnName = "id")}, 
-    		  inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    		  inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "role_id")})
     private Set<Role> roles = new HashSet<>();
 	
     

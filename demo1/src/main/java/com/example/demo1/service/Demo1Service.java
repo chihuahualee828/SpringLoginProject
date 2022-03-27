@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 
-import com.example.demo1.AccountQueryParameter;
+
 import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.AccountRequest;
