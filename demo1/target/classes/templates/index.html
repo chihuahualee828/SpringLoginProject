@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Index</title>
+</head>
+<style>
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  flex-direction: column;
+}
+div.relative {
+  position: relative;
+}
+
+</style>
+<body>
+<!--  
+	<input type="text" name="yourName" id="yourName">
+    <p>Go to <a id="link" href="hello?name=" onclick="redirectName()">hello.html</a></p>
+
+	<input type="text" name="userId" id="userId">
+	<input type="text" name="password" id="password">
+    <button type="submit"> Login </button>
+-->
+	<div class="center" th:switch="${#authorization.expression('hasAuthority('ACTIVE')')}">
+	
+		<div th:case="true">
+		<div class="relative">
+			Welcome Back<b>
+			
+			<span th:text ="${#authentication.getPrincipal().getUsername()}">
+			Username</span>(<span th:text ="${#authentication.getPrincipal().getUserId()}">
+			id</span>)
+			
+			<span sec:authentication="principal.authorities">
+			Role</span>
+			</b>
+		</div>
+	
+		<div class="relative" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
+			<a href="view" >view all users</a>
+		</div>
+		</div>
+		<div th:case="false">
+			You are not active
+		</div>
+		
+		<button id="" type="button" onclick="logout()">Logout</button>
+		
+	</div>
+</body>
+
+<script>
+	function logout() {
+		location.href = "logout_page";// logout_page : see controller
+	}
+	/**
+	function redirectName() {
+		
+	    name = document.getElementById("yourName").value;
+	    document.getElementById('link').href = "hello?name="+name;
+	}**/
+	
+</script>
+</html>
