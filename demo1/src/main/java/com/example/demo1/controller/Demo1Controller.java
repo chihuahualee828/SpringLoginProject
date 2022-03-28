@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -70,9 +72,9 @@ public class Demo1Controller {
     
 
     @PostMapping("/trigger-checkbox/{id}")
-    public String saveChange(@PathVariable("id") String id, @RequestBody Account request) {
-    	
-    	System.out.println(id);
+    @ResponseStatus(value = HttpStatus.OK)
+    public void saveChange(@PathVariable("id") String id, @RequestBody Account request) {
+
     	Account account = demo1Service.getAccount(Long.valueOf(id));
 //    	for(Account account : accounts) {
 //    		System.out.println(account);
@@ -91,15 +93,16 @@ public class Demo1Controller {
 //		} catch (Exception e) {
 //			System.out.println(e);
 //		}
+    	System.out.println(account.getId());
     	account.setIsActive(request.getIsActive());
     	System.out.println(account.getIsActive());
     	try {
-    		demo1Service.updateAccount(AccountConverter.toAccountRequest(request));
+    		demo1Service.updateAccount(AccountConverter.toAccountRequest(account));
 		} catch (Exception e) {
 			System.out.println(e);
 		}
     	
-		return "view";
+//		return "view";
     }
     
 

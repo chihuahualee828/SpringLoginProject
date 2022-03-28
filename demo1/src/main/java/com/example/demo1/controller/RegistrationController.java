@@ -71,12 +71,6 @@ public class RegistrationController {
 			System.out.println(e);
 			return "register";
 		}
-    	
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(account.getId())
-//                .toUri();
         return "login";
     }
     

@@ -21,8 +21,7 @@ import com.example.demo1.repository.AccountRepository;
 
 @Service("SpringUserService")
 public class SpringUserService implements UserDetailsService {
-    @Autowired
-    private Demo1Service demo1Service;
+    
 
     @Autowired
     private AccountRepository accountRepository;

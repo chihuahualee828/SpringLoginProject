@@ -104,11 +104,14 @@ public class Demo1Service {
                 .orElseThrow(() -> new NotFoundException("Can't find user id."));
     }
     
-    public AccountResponse updateAccount(AccountRequest request) {
+    public void updateAccount(AccountRequest request) {
+    	
     	Account account=getAccount(request.getId());
-    	account.setIsActive(request.getIsActive());
+//    	account.setIsActive(request.getIsActive());
+//    	System.out.println(account.getId());
+//    	System.out.println(account.getIsActive());
     	repository.save(account);
-    	return AccountConverter.toAccountResponse(account);
+//    	return AccountConverter.toAccountResponse(account);
     }
     
     
