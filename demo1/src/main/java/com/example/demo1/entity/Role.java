@@ -12,7 +12,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,7 +41,7 @@ public class Role {
 //    private boolean canEdit;
 //	
 	
-    
+    //@Transient : for front end extra parameter that's not in entity
     public Role() {
 	}
 

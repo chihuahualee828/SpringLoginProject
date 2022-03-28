@@ -19,9 +19,10 @@
          Password
           <input type="password" name="password" required/>
         </p>
-        <input type="hidden"  th:name="${_csrf.parameterName}"  th:value="${_csrf.token}" />
+        <!-- <input type="hidden"  th:name="${_csrf.parameterName}"  th:value="${_csrf.token}" />-->
+        
         <button type="submit">Log in</button>
-        <button type="button" onlcik="creatAccountButton()">Create Account</button>
+        <button type="button" onclick="creatAccountButton()">Create Account</button>
     </form>
     <!-- <a href="register_page" >Create Account</a>-->
 </body>

@@ -60,6 +60,7 @@ public class Demo1Service {
         }
         
         
+        //put in controller
         //Optional<Account> existingEmail=Optional.of(existEmail);
         if (userExist) {
             throw new com.example.demo1.exception.UnprocessableEntityException("The user already exists .");

@@ -24,6 +24,9 @@ public class SpringUser implements UserDetails {
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
+        if(account.getIsActive()) {
+        	authorities.add(new SimpleGrantedAuthority("ACTIVE"));
+        }
          
         return authorities;
     }

@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login_page","/perform_login","/register_page", "/logout_page", "/perform_logout").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
-                //.csrf().disable()
+                .csrf().disable()
                 .formLogin()
 	                .loginPage("/login_page")
 	                .loginProcessingUrl("/perform_login")

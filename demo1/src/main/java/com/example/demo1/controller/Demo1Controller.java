@@ -3,6 +3,7 @@ package com.example.demo1.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 
 import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
@@ -65,11 +69,11 @@ public class Demo1Controller {
     
     
 
-    @PostMapping("/trigger-checkbox")
-    //@RequestMapping(value = "/view", params = "update", method = RequestMethod.POST)
-    public String saveChange(@ModelAttribute("users") Account account,
-    		Model model) {
+    @PostMapping("/trigger-checkbox/{id}")
+    public String saveChange(@PathVariable("id") String id, @RequestBody Account request) {
     	
+    	System.out.println(id);
+    	Account account = demo1Service.getAccount(Long.valueOf(id));
 //    	for(Account account : accounts) {
 //    		System.out.println(account);
 //        	System.out.println(account.getId());
@@ -81,9 +85,16 @@ public class Demo1Controller {
 //    			System.out.println(e);
 //    		}
 //    	}
-    	AccountRequest request=AccountConverter.toAccountRequest(account);
+//    	AccountRequest request=AccountConverter.toAccountRequest(account);
+//    	try {
+//    		demo1Service.updateAccount(request);
+//		} catch (Exception e) {
+//			System.out.println(e);
+//		}
+    	account.setIsActive(request.getIsActive());
+    	System.out.println(account.getIsActive());
     	try {
-    		demo1Service.updateAccount(request);
+    		demo1Service.updateAccount(AccountConverter.toAccountRequest(request));
 		} catch (Exception e) {
 			System.out.println(e);
 		}

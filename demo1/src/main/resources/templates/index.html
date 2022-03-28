@@ -27,7 +27,7 @@ div.relative {
 	<input type="text" name="password" id="password">
     <button type="submit"> Login </button>
 -->
-	<div class="center" th:switch="${#authorization.expression('hasAuthority('ACTIVE')')}">
+	<div class="center" th:switch="${#authorization.expression('hasAuthority(''ACTIVE'')')}">
 	
 		<div th:case="true">
 		<div class="relative">

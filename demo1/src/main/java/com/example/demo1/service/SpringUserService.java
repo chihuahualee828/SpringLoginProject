@@ -51,10 +51,13 @@ public class SpringUserService implements UserDetailsService {
             throw new UsernameNotFoundException("Could not find user");
         }
     	Account account=accounts.get();
-    	Object[] arr = account.getRoles().toArray();
-    	System.out.println(arr[0]);
+    	if(!account.getIsActive()) {
+            throw new UsernameNotFoundException("Not Active");
+    	}
+    	
+    	
     	//return new User(account.getId().toString(),account.getPassword(),Collections.emptyList());
-        return new SpringUser(accounts.get());
+        return new SpringUser(account);
     	
     }
     
