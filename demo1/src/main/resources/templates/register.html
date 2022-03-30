@@ -16,6 +16,8 @@ input::-webkit-inner-spin-button {
     <form style="margin: auto; width: 220px;" th:object="${account}" method="post">
         <h2>Create Account</h2>
         
+        <div th:text="${errorMessage}"></div>
+        
         <p>
          ID<br>
           <input type="number" th:field="*{id}" required autofocus/>
@@ -81,7 +83,6 @@ input::-webkit-inner-spin-button {
 		});
 	    
 	    
-	    console.log(name);
 	}
 	
 	

@@ -1,20 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta th:name="_csrf.parameterName" th:content="${_csrf.token}" />
+    
     <title>Hello PostgreSQL</title>
+    
 </head>
 <style>
-table, th, td {
+table {
   border: 1px solid black;
+  border-collapse: collapse;
+  transition-duration: 0.5s;
+  
 }
+.greyout {
+  opacity: 0.3;
+}
+th {
+  border: 3px solid black;
+  padding: 5px;
+}
+
+tr {
+  background-color: grey;
+}
+.highlight {
+  background-color: yellow !important;
+}
+
+td {
+  border: 1px solid black;
+  padding: 5px;
+}
+
+
+.input-transparent
+{
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+
+
+
 </style>
 <body>
     <p th:text="${name}"/>
-    <!-- <input type="hidden"  th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
-    <input type="submit" id="submitButton" th:value="Save">
-    <input type="text" placeholder="Search..">
     
+    <input type="text" placeholder="Search..">
+    <select id="searchBy" onchange="searchBy();">
+    	<option value="id">id</option>
+    	<option value="name">name</option>
+    </select>
     <select id="sortby" onchange="sortBy();">
     	<option value="id">id</option>
     	<option value="name">name</option>
@@ -37,16 +77,39 @@ table, th, td {
         </tr>
         
         
-        <tr th:each="user,iteration : ${users}">
-            <td th:text="${user.name}">Name</td>
-            <td th:text="${user.id}">id</td>
-            <td th:text="${user.password}">Password</td>
-            <td th:text="${user.emailAddress}">Email</td>
-            <td th:text="${user.mobile}">Mobile</td>
+        <tr th:each="user,iteration : ${users}" th:id="'row' + ${user.id}"
+        	th:class="${user.isActive} ? '' : 'greyout'"
+        	th:classappend="${#authentication.getPrincipal().getUserId()} == ${user.id}  ? 'highlight':''"
+        	>
+        	
             <td>
+            	<input type="text" th:value="${user.name}" readonly="readonly" 
+            	class="input-transparent"
+            	ondblclick="doubleClick(this,'name')"/>
+            </td>
+            <td>
+            	<input type="text" th:value="${user.id}" readonly="readonly" 
+            	class="input-transparent"
+            	ondblclick="doubleClick(this,'id')"/>
+            </td>
+            <td th:text="${user.password}">Password</td>
+            <td >
+            	<input type="text" th:value="${user.emailAddress}" readonly="readonly" 
+            	class="input-transparent"
+            	ondblclick="doubleClick(this,'emailAddress'')"/>
+            </td>
+            <td>
+            	<input type="text" th:value="${user.mobile}" readonly="readonly" 
+            	class="input-transparent"
+            	ondblclick="doubleClick(this,'mobile')"/>
+            </td>
+            <td >
             	<input type="checkbox"
 	            	th:checked="${user.isActive}"
-	            	th:id="${user.id}" onchange="showCheckBox(this.id)" />
+	            	th:id="${user.id}" 
+	            	th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
+	            	onchange="showCheckBox(this.id)" 
+	            />
             </td>
         </tr>
     </tbody>
@@ -55,23 +118,105 @@ table, th, td {
     
 </body>
 <script type="text/javascript"
-        src="webjars/jquery/2.2.4/jquery.min.js"></script>
+        src="/demo1/webjars/jquery/2.2.4/jquery.min.js"></script>
 <script type="text/javascript">
-
+	
+	$(function(){
+		var currentUrl = window.location.href;
+		var select = currentUrl.substring(currentUrl.lastIndexOf('/')+1);
+		console.log(select);
+		if(select=="view"){
+			document.getElementById("sortby").value="id";
+		}else{
+			document.getElementById("sortby").value=select;
+		}
+		
+		
+	});
+	
+	function doubleClick(td, col){
+		var otherTds=document.querySelectorAll(".input");
+		otherTds.forEach(each => {
+			  each.setAttribute("readonly",true);
+			  each.classList.remove('input');
+			  each.classList.add("input-transparent");
+		});
+		if(!td.hasAttribute("readonly")){
+			td.setAttribute("readonly",true);
+			td.classList.add("input-transparent");
+		}else{
+			td.removeAttribute("readonly");
+			td.classList.remove("input-transparent");
+			td.classList.add("input");
+			td.addEventListener('keypress', function (e) {
+			    if (e.key === 'Enter') {
+			    	td.setAttribute("readonly",true);
+					td.classList.add("input-transparent");
+			    	var id = td.parentNode.parentNode.id.replace("row","");
+			    	var content = td.value;
+			    	var key = col;
+			    	
+			    	var token = $("meta[name='_csrf.parameterName']").attr("content");
+					$.ajaxSetup({
+				        beforeSend: function(xhr) {
+				            xhr.setRequestHeader('X-CSRF-Token', token);
+				        }
+				    });
+				    $.ajax({
+						type: "POST",
+						url: '/demo1/save/'.concat(id),
+						dataType: 'json',
+						contentType: "application/json",
+					    data: JSON.stringify({
+					    	[key]: content
+					    }),
+					    
+					    success:function(data) {
+							console.log("success " + data.result);
+						},
+						error:function(data) {
+							console.log("error " + JSON.stringify(data));
+						}
+					});
+					
+			    	console.log(id, key, content);
+			    	td.replaceWith(td.cloneNode(true));
+			    	
+			    }
+			});
+			
+		}
+		
+		
+	}
+	
+	
 	function showCheckBox(id){
 		var x = document.getElementById(id).checked;
+		var token = $("meta[name='_csrf.parameterName']").attr("content");
 		console.log(id,x);
 		const obj={
 				"isActive": x
 			};
-    	
+		var row = document.getElementById("row"+id);
+
+		if(x){
+			row.classList.remove("greyout");
+		}else{
+			row.classList.add("greyout");
+		}
+		
+		$.ajaxSetup({
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader('X-CSRF-Token', token);
+	        }
+	    });
     
 	    $.ajax({
 			type: "POST",
-			url: 'trigger-checkbox/'.concat(id),
+			url: '/demo1/trigger-checkbox/'.concat(id),
 			dataType: 'json',
 			contentType: "application/json",
-	
 		    data: JSON.stringify(obj),
 		    
 		    success:function(data) {
@@ -88,8 +233,10 @@ table, th, td {
 	
 	function sortBy() {
 		var x = document.getElementById("sortby").value;
+		var token = $("meta[name='_csrf.parameterName']").attr("content");
+	
 		console.log(x);
-		
+        window.location.href="/demo1/sortBy/"+x;
 	}
 	
 </script>

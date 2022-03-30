@@ -149,21 +149,26 @@ public class Demo1Service {
     	
     }
     
-    public List<Account> getAccountsIdAsc() {
-      return repository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+    public List<Account> getAccountsSort(String asc, String sortBy) {
+    	if(asc=="asc") {
+    	     return repository.findAll(Sort.by(Sort.Direction.ASC, sortBy));
+    	}else {
+    	     return repository.findAll(Sort.by(Sort.Direction.DESC, sortBy));
+    	}
   	
-  }
-   
-    //not used yet
-    private Sort genSortingStrategy(String orderBy, String sortRule) {
-        Sort sort = Sort.unsorted();
-        if (Objects.nonNull(orderBy) && Objects.nonNull(sortRule)) {
-            Sort.Direction direction = Sort.Direction.fromString(sortRule);
-            sort = Sort.by(direction, orderBy);
-        }
-
-        return sort;
     }
+    
+   
+   
+//    private Sort genSortingStrategy(String orderBy, String sortRule) {
+//        Sort sort = Sort.unsorted();
+//        if (Objects.nonNull(orderBy) && Objects.nonNull(sortRule)) {
+//            Sort.Direction direction = Sort.Direction.fromString(sortRule);
+//            sort = Sort.by(direction, orderBy);
+//        }
+//
+//        return sort;
+//    }
     
     
     

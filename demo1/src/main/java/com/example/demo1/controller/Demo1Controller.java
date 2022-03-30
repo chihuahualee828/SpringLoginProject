@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,13 +37,7 @@ public class Demo1Controller {
 	@Autowired
 	private Demo1Service demo1Service;
 	
-    @GetMapping("/hello")
-    public String hello(
-            @RequestParam(name = "name", required = false, defaultValue = "World") String name,
-            Model model) {
-        model.addAttribute("name", name); // set request attribute with key "name"
-        return "hello"; // forward to hello.html
-    }
+    
     
     @GetMapping("/view")
     public String getAllAccounts(Model model) {
@@ -64,35 +59,19 @@ public class Demo1Controller {
 //    	List<Account> accounts = new ArrayList<Account>();
 //    	Account account1 = new Account(Long.valueOf(6054), "BBB", "1233");
 //    	accounts.add(account1);
-    	model.addAttribute("users", demo1Service.getAccountsIdAsc());
-    	System.out.println(model.getAttribute("users"));
-		return "view";
+    	model.addAttribute("users", demo1Service.getAccountsSort("asc","id"));
+    	//System.out.println(model.getAttribute("users"));
+    	return "view";
     }
     
     
 
     @PostMapping("/trigger-checkbox/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void saveChange(@PathVariable("id") String id, @RequestBody Account request) {
+    public void updateActive(@PathVariable("id") String id, @RequestBody Account request) {
 
     	Account account = demo1Service.getAccount(Long.valueOf(id));
-//    	for(Account account : accounts) {
-//    		System.out.println(account);
-//        	System.out.println(account.getId());
-//        	System.out.println(account.getIsActive());
-//        	AccountRequest request=AccountConverter.toAccountRequest(account);
-//        	try {
-//        		demo1Service.updateAccount(request);
-//    		} catch (Exception e) {
-//    			System.out.println(e);
-//    		}
-//    	}
-//    	AccountRequest request=AccountConverter.toAccountRequest(account);
-//    	try {
-//    		demo1Service.updateAccount(request);
-//		} catch (Exception e) {
-//			System.out.println(e);
-//		}
+
     	System.out.println(account.getId());
     	account.setIsActive(request.getIsActive());
     	System.out.println(account.getIsActive());
@@ -102,12 +81,52 @@ public class Demo1Controller {
 			System.out.println(e);
 		}
     	
-//		return "view";
     }
     
-
+    @PostMapping("/save/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void saveChange(@PathVariable("id") String id, @RequestBody String request) {
+    	
+    	Account account = demo1Service.getAccount(Long.valueOf(id));
+    	System.out.println(id);
+    	
+    	System.out.println(request);
+    	JSONObject jsonObject = new JSONObject(request);
+    	String keyString= jsonObject.keys().next().toString();
+    	String valueString=jsonObject.get(keyString).toString();
+    	
+    	switch (keyString) {
+		case "id":
+			account.setId(Long.valueOf(valueString));
+			break;
+		case "name":
+			account.setName(valueString);
+			break;
+		case "emailAddress":
+			account.setEmailAddress(valueString);
+			break;
+		case "mobile":
+			account.setMobile(Integer.valueOf(valueString));
+			break;
+		default:
+			break;
+		}
+    	System.out.println(keyString+" "+valueString);
+    	try {
+    		demo1Service.updateAccount(AccountConverter.toAccountRequest(account));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+    }
     
-    
+    @GetMapping("/sortBy/{sort}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public String sortBy(@PathVariable("sort") String sort, Model model) {
+    	System.out.println(sort);
+    	model.addAttribute("users", demo1Service.getAccountsSort("asc",sort));
+    	System.out.println(model.getAttribute("users"));
+    	return "view";
+    }
     
     
 }

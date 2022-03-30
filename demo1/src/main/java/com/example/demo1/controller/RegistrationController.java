@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,16 +63,17 @@ public class RegistrationController {
     
     @PostMapping("/register_page")
 //    @RequestMapping(value ="/register_page", method = RequestMethod.POST)
-    public String createAccount(@Valid @ModelAttribute("account") Account account) {
+    public String createAccount(@Valid @ModelAttribute("account") Account account, ModelMap modelMap) {
     	System.out.println(account);
     	AccountRequest request=AccountConverter.toAccountRequest(account);
     	try {
     		demo1Service.createAccount(request);
 		} catch (Exception e) {
 			System.out.println(e);
+			modelMap.addAttribute("errorMessage", e);
 			return "register";
 		}
-        return "login";
+        return "index";
     }
     
 //    @PostMapping("/register_page")

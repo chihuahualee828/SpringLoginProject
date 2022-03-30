@@ -52,13 +52,24 @@ div.relative {
 		
 		<button id="" type="button" onclick="logout()">Logout</button>
 		
+		<div class="relative" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
+			<button type="button" onclick="creatAccountButton()">Create Account</button>
+		</div>
+		
+		
 	</div>
 </body>
-
+<script type="text/javascript"
+        src="webjars/jquery/2.2.4/jquery.min.js"></script>
 <script>
 	function logout() {
 		location.href = "logout_page";// logout_page : see controller
 	}
+	
+	function creatAccountButton() {
+		location.href = "register_page";
+	}
+	
 	/**
 	function redirectName() {
 		
