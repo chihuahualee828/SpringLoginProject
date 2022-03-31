@@ -1,18 +1,22 @@
 package com.example.demo1.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.AccountRequest;
+import com.example.demo1.entity.Role;
 import com.example.demo1.service.Demo1Service;
 
 @Controller
@@ -60,6 +66,7 @@ public class Demo1Controller {
 //    	Account account1 = new Account(Long.valueOf(6054), "BBB", "1233");
 //    	accounts.add(account1);
     	model.addAttribute("users", demo1Service.getAccountsSort("asc","id"));
+    	//model.addAttribute("roles", demo1Service.getRolesSort("asc","id"));
     	//System.out.println(model.getAttribute("users"));
     	return "view";
     }
@@ -70,40 +77,107 @@ public class Demo1Controller {
     @ResponseStatus(value = HttpStatus.OK)
     public void updateActive(@PathVariable("id") String id, @RequestBody Account request) {
 
-    	Account account = demo1Service.getAccount(Long.valueOf(id));
-
+    	Account account = demo1Service.getAccountById(Long.valueOf(id));
+    	
     	System.out.println(account.getId());
     	account.setIsActive(request.getIsActive());
     	System.out.println(account.getIsActive());
     	try {
-    		demo1Service.updateAccount(AccountConverter.toAccountRequest(account));
+    		demo1Service.updateAccount(account);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-    	
     }
     
-    @PostMapping("/save/{id}")
+    
+    
+    @PostMapping("/change-role/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void saveChange(@PathVariable("id") String id, @RequestBody String request) {
+    public void updateRole(@PathVariable("id") String id, @RequestBody String request) {
+
+    	Account account = demo1Service.getAccountById(Long.valueOf(id));
     	
-    	Account account = demo1Service.getAccount(Long.valueOf(id));
-    	System.out.println(id);
-    	
-    	System.out.println(request);
     	JSONObject jsonObject = new JSONObject(request);
     	String keyString= jsonObject.keys().next().toString();
     	String valueString=jsonObject.get(keyString).toString();
     	
+    	if(!account.getRoles().isEmpty()) {
+        	System.out.println(account.getRoles().iterator().next().getName());
+    	}
+    	
+    	
+    	Role newRole = new Role();
+    	switch (valueString) {
+		case "USER":
+			newRole.setId(Long.valueOf(1));
+			newRole.setName("USER");
+			break;
+		case "MANAGER":
+			newRole.setId(Long.valueOf(2));
+			newRole.setName("MANAGER");
+			break;
+		case "ADMIN":
+			newRole.setId(Long.valueOf(3));
+			newRole.setName("ADMIN");
+			break;
+		default:
+			break;
+		}
+    	
+    	Set<Role> roleSet = new HashSet<Role>();
+    	roleSet.add(newRole);
+    	account.setRoles(roleSet);
+    	System.out.println(account.getRoles().iterator().next().getName());
+    	try {
+    		demo1Service.updateAccount(account);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+    }
+    
+    
+    
+    @PostMapping("/save/{id}")
+    //@ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<Object> saveChange(@PathVariable("id") String id, @RequestBody String request) {
+    	
+    	Account account = demo1Service.getAccountById(Long.valueOf(id));
+    	System.out.println(id);
+    	
+    	JSONObject jsonObject = new JSONObject(request);
+    	String keyString= jsonObject.keys().next().toString();
+    	String valueString=jsonObject.get(keyString).toString();
+    	System.out.println(keyString+" "+valueString);
+    	
     	switch (keyString) {
 		case "id":
-			account.setId(Long.valueOf(valueString));
-			break;
+			try {
+				demo1Service.getAccountById(Long.valueOf(valueString));
+				return new ResponseEntity<>("ID is already used.", new HttpHeaders(), HttpStatus.CONFLICT);
+			} catch (Exception e) {
+				Account newAccount = new Account();
+				newAccount.setId(Long.valueOf(valueString));
+				newAccount.setName(account.getName());
+				newAccount.setEmailAddress(account.getEmailAddress());
+				newAccount.setPassword(account.getPassword());
+				newAccount.setDisplayNmae(account.getDisplayName());
+				newAccount.setMobile(account.getMobile());
+				newAccount.setRoles(account.getRoles());
+				demo1Service.deleteAccount(Long.valueOf(id));
+				demo1Service.createAccount(newAccount);
+				return new ResponseEntity<>("updated",new HttpHeaders(), HttpStatus.OK);
+			}
 		case "name":
 			account.setName(valueString);
 			break;
 		case "emailAddress":
-			account.setEmailAddress(valueString);
+			try {
+				demo1Service.getAccountByEmail(valueString);
+				return new ResponseEntity<>("Email is already used.", new HttpHeaders(), HttpStatus.CONFLICT);
+
+			} catch (Exception e) {
+				account.setEmailAddress(valueString);
+			}
 			break;
 		case "mobile":
 			account.setMobile(Integer.valueOf(valueString));
@@ -111,20 +185,23 @@ public class Demo1Controller {
 		default:
 			break;
 		}
-    	System.out.println(keyString+" "+valueString);
+    	
     	try {
-    		demo1Service.updateAccount(AccountConverter.toAccountRequest(account));
+    		demo1Service.updateAccount(account);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+		return new ResponseEntity<>("updated",new HttpHeaders(), HttpStatus.OK);
+
     }
     
     @GetMapping("/sortBy/{sort}")
     @ResponseStatus(value = HttpStatus.OK)
     public String sortBy(@PathVariable("sort") String sort, Model model) {
-    	System.out.println(sort);
+
     	model.addAttribute("users", demo1Service.getAccountsSort("asc",sort));
-    	System.out.println(model.getAttribute("users"));
+    	//model.addAttribute("roles", demo1Service.getRolesSort("asc",sort));
+
     	return "view";
     }
     

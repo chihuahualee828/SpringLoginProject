@@ -16,7 +16,8 @@ table {
   
 }
 .greyout {
-  opacity: 0.3;
+  background-color: lightgrey !important;
+  
 }
 th {
   border: 3px solid black;
@@ -24,7 +25,7 @@ th {
 }
 
 tr {
-  background-color: grey;
+  background-color: darkgrey;
 }
 .highlight {
   background-color: yellow !important;
@@ -40,7 +41,11 @@ td {
 {
     background: transparent;
     border: none;
-    outline: none;
+}
+
+.input
+{
+    border: none;
 }
 
 
@@ -48,17 +53,22 @@ td {
 
 </style>
 <body>
-    <p th:text="${name}"/>
     
-    <input type="text" placeholder="Search..">
-    <select id="searchBy" onchange="searchBy();">
-    	<option value="id">id</option>
-    	<option value="name">name</option>
-    </select>
-    <select id="sortby" onchange="sortBy();">
-    	<option value="id">id</option>
-    	<option value="name">name</option>
-    </select>
+    <div>
+    	<input type="text" placeholder="Search.." >
+    
+	    <select id="searchBy" onchange="searchBy();">
+	    	<option value="id">id</option>
+	    	<option value="name">name</option>
+	    </select>
+    </div>
+    
+    <div style="float:right;" >Sort by&nbsp;
+	    <select id="sortby" onchange="sortBy();">
+	    	<option value="id">id</option>
+	    	<option value="name">name</option>
+	    </select>
+    </div>
     <table>
     <thead>
         <tr>
@@ -68,6 +78,7 @@ td {
             <th>Email</th>
             <th>Mobile</th>
             <th>Active</th>
+            <th>Authority</th>
         </tr>
     </thead>
     <tbody>
@@ -77,7 +88,7 @@ td {
         </tr>
         
         
-        <tr th:each="user,iteration : ${users}" th:id="'row' + ${user.id}"
+        <tr th:each="user,iteration : ${users}"  th:id="'row' + ${user.id}"
         	th:class="${user.isActive} ? '' : 'greyout'"
         	th:classappend="${#authentication.getPrincipal().getUserId()} == ${user.id}  ? 'highlight':''"
         	>
@@ -88,18 +99,18 @@ td {
             	ondblclick="doubleClick(this,'name')"/>
             </td>
             <td>
-            	<input type="text" th:value="${user.id}" readonly="readonly" 
+            	<input type="text" th:id="'id'+${user.id}" th:value="${user.id}" readonly="readonly" 
             	class="input-transparent"
             	ondblclick="doubleClick(this,'id')"/>
             </td>
             <td th:text="${user.password}">Password</td>
             <td >
-            	<input type="text" th:value="${user.emailAddress}" readonly="readonly" 
+            	<input type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
             	class="input-transparent"
-            	ondblclick="doubleClick(this,'emailAddress'')"/>
+            	ondblclick="doubleClick(this,'emailAddress')"/>
             </td>
             <td>
-            	<input type="text" th:value="${user.mobile}" readonly="readonly" 
+            	<input type="text" th:id="'mobile'+${user.id}" th:value="${user.mobile}" readonly="readonly" 
             	class="input-transparent"
             	ondblclick="doubleClick(this,'mobile')"/>
             </td>
@@ -110,6 +121,24 @@ td {
 	            	th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
 	            	onchange="showCheckBox(this.id)" 
 	            />
+            </td>
+            
+            
+            <td th:if="${user.roles.empty}">
+            	<select th:id="'role'+${user.id}"
+            	 	onchange="selectRole(this, this.id);">
+            	 	<option selected="selected" value="xxx">--</option>
+			    	<option value="user">USER</option>
+			    </select>
+            </td>
+            <td th:each="role : ${user.roles}">
+            	<select th:id="'role'+${user.id}"
+            		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
+            	 	onchange="selectRole(this, this.id);">
+			    	<option th:selected="(${role.name}=='USER')" value="user">USER</option>
+			    	<option th:selected="(${role.name}=='MANAGER')" value="manager">MANAGER</option>
+			    	<option th:selected="(${role.name}=='ADMIN')" value="admin">ADMIN</option>
+			    </select>
             </td>
         </tr>
     </tbody>
@@ -134,9 +163,16 @@ td {
 		
 	});
 	
+	// edit user information other than isactive
 	function doubleClick(td, col){
+		var originalContent=td.value;
 		var otherTds=document.querySelectorAll(".input");
 		otherTds.forEach(each => {
+			  toString  = new XMLSerializer().serializeToString(each);
+			  revert = toString.substring(toString.indexOf("value")+7, 
+					  toString.indexOf("class")-2);
+			  console.log(revert);
+			  each.value=revert;
 			  each.setAttribute("readonly",true);
 			  each.classList.remove('input');
 			  each.classList.add("input-transparent");
@@ -144,50 +180,54 @@ td {
 		if(!td.hasAttribute("readonly")){
 			td.setAttribute("readonly",true);
 			td.classList.add("input-transparent");
+			td.value=originalContent;
 		}else{
 			td.removeAttribute("readonly");
 			td.classList.remove("input-transparent");
 			td.classList.add("input");
 			td.addEventListener('keypress', function (e) {
 			    if (e.key === 'Enter') {
+			    	td.classList.remove('input');
 			    	td.setAttribute("readonly",true);
 					td.classList.add("input-transparent");
 			    	var id = td.parentNode.parentNode.id.replace("row","");
 			    	var content = td.value;
 			    	var key = col;
 			    	
-			    	var token = $("meta[name='_csrf.parameterName']").attr("content");
-					$.ajaxSetup({
-				        beforeSend: function(xhr) {
-				            xhr.setRequestHeader('X-CSRF-Token', token);
-				        }
-				    });
-				    $.ajax({
-						type: "POST",
-						url: '/demo1/save/'.concat(id),
-						dataType: 'json',
-						contentType: "application/json",
-					    data: JSON.stringify({
-					    	[key]: content
-					    }),
-					    
-					    success:function(data) {
-							console.log("success " + data.result);
-						},
-						error:function(data) {
-							console.log("error " + JSON.stringify(data));
-						}
-					});
-					
+			    	if(content!=originalContent){
+				    	var token = $("meta[name='_csrf.parameterName']").attr("content");
+						$.ajaxSetup({
+					        beforeSend: function(xhr) {
+					            xhr.setRequestHeader('X-CSRF-Token', token);
+					        }
+					    });
+					    $.ajax({
+							type: "POST",
+							url: '/demo1/save/'.concat(id),
+							contentType: "application/json",
+						    data: JSON.stringify({
+						    	[key]: content
+						    }),
+						    
+						    success:function(data) {
+								console.log("success " + JSON.stringify(data));
+							},
+							error:function(data) {
+								console.log("error " + JSON.stringify(data));
+								if(key=="emailAddress"){
+									key="email";
+								}
+								document.getElementById(key+id).value=originalContent; // revert if input is not valid
+								alert(data.responseText);
+							}
+						});
+			    	}
+				    
 			    	console.log(id, key, content);
 			    	td.replaceWith(td.cloneNode(true));
-			    	
 			    }
 			});
-			
 		}
-		
-		
 	}
 	
 	
@@ -215,7 +255,6 @@ td {
 	    $.ajax({
 			type: "POST",
 			url: '/demo1/trigger-checkbox/'.concat(id),
-			dataType: 'json',
 			contentType: "application/json",
 		    data: JSON.stringify(obj),
 		    
@@ -225,11 +264,40 @@ td {
 			error:function(data) {
 				console.log("error " + JSON.stringify(data));
 			}
-		    
-		    
 			
 		});
 	}
+	
+	//changing authority 
+	function selectRole(selected, id){
+		console.log(selected.value);
+		var token = $("meta[name='_csrf.parameterName']").attr("content");
+		const obj={
+				"role": selected.value.toUpperCase()
+			};
+		
+		$.ajaxSetup({
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader('X-CSRF-Token', token);
+	        }
+	    });
+    
+	    $.ajax({
+			type: "POST",
+			url: '/demo1/change-role/'.concat(id.substring(id.indexOf("role")+4)),
+			contentType: "application/json",
+		    data: JSON.stringify(obj),
+		    
+		    success:function(data) {
+				console.log("success " + data.result);
+			},
+			error:function(data) {
+				console.log("error " + JSON.stringify(data));
+			}
+		});
+	}
+	
+	
 	
 	function sortBy() {
 		var x = document.getElementById("sortby").value;

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import com.sun.istack.NotNull;
 
 public class AccountRequest {
+	
 	@NotNull
 	private Long id;
 	

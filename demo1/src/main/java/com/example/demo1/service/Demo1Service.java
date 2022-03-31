@@ -2,6 +2,7 @@ package com.example.demo1.service;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -15,8 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-
+import org.thymeleaf.standard.expression.Each;
 
 import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
@@ -50,63 +50,55 @@ public class Demo1Service {
 	
 	
    
-	public void createAccount(AccountRequest request) {
-        Boolean userExist = repository.existsById(request.getId());
-        Boolean emailValid=false;
+	public void createAccount(Account request) {
+		
+		
         Role role=new Role();
         Set<Role> roles = new HashSet<>();
-        if(request.getEmailAddress()=="" || request.getEmailAddress()==null) {
-        	emailValid=true;
-        }
-        
-        
-        //put in controller
-        //Optional<Account> existingEmail=Optional.of(existEmail);
-        if (userExist) {
-            throw new com.example.demo1.exception.UnprocessableEntityException("The user already exists .");
-        }
-        if(emailValid==false) {
-        	Account existEmail=repository.findByEmailAddress(request.getEmailAddress());
-        	if(existEmail!=null) {
-        		throw new com.example.demo1.exception.UnprocessableEntityException("This email is already used .");
-        	}
-        }
-        
-        
-        Account user = AccountConverter.toAccount(request);
+//        Account user = AccountConverter.toAccount(request);
         role.setId(Long.valueOf(1));
         role.setName("USER");
         roles.add(role);
-        user.setRoles(roles);
+        request.setRoles(roles);
         
-        System.out.println(user.getId());
-        System.out.println(user.getName());
-        System.out.println(user.getPassword());
-        System.out.println(user.getEmailAddress());
-        System.out.println(user.getMobile());
-        System.out.println(user.getIsActive());
-        Role[] arr = user.getRoles().toArray(new Role[0]);
+        System.out.println(request.getId());
+        System.out.println(request.getName());
+        System.out.println(request.getPassword());
+        System.out.println(request.getEmailAddress());
+        System.out.println(request.getMobile());
+        System.out.println(request.getIsActive());
+        Role[] arr = request.getRoles().toArray(new Role[0]);
     	System.out.println("role: "+arr[0].getName());
         //encode password and then insert into repository
         //user.setPassword(request.getPassword());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        
-        
-        user = repository.save(user);
+    	request.setPassword(passwordEncoder.encode(request.getPassword()));
+    	request = repository.save(request);
         
 //        return AccountConverter.toAccountResponse(user);
     }
+	
+	public Account deleteAccount(Long id){
+		Account account = getAccountById(id);
+		repository.deleteById(id);
+		return account;
+		 
+	}
 
-    public Account getAccount(Long id) {
-//        return productDAO.find(id)
-//                .orElseThrow(() -> new NotFoundException("Can't find product."));
+    public Account getAccountById(Long id) {
     	return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Can't find user id."));
     }
     
-    public void updateAccount(AccountRequest request) {
+    public Account getAccountByEmail(String email) {
+    	Optional<Account> accountOptional = Optional.of(repository.findByEmailAddress(email));
+    	return accountOptional
+                .orElseThrow(() -> new NotFoundException("Can't find email."));
+  }
+    
+    
+    public void updateAccount(Account request) {
     	
-    	Account account=getAccount(request.getId());
+    	Account account=getAccountById(request.getId());
 //    	account.setIsActive(request.getIsActive());
 //    	System.out.println(account.getId());
 //    	System.out.println(account.getIsActive());
@@ -115,12 +107,12 @@ public class Demo1Service {
     }
     
     
-
-    public AccountResponse getAccountResponseById(Long id) {
-        Account user = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Can't find user."));
-        return AccountConverter.toAccountResponse(user);
-    }
+    
+//    public AccountResponse getAccountResponseById(Long id) {
+//        Account user = repository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Can't find user."));
+//        return AccountConverter.toAccountResponse(user);
+//    }
 
 //    public Account getAccountByEmail(String email) {
 //        return repository.findByEmailAddress(email)
@@ -155,6 +147,28 @@ public class Demo1Service {
     	}else {
     	     return repository.findAll(Sort.by(Sort.Direction.DESC, sortBy));
     	}
+  	
+    }
+    
+    public List<Set<Role>> getRolesSort(String asc, String sortBy) {
+    	List<Set<Role>> roles = new ArrayList<Set<Role>>();
+    	if(asc=="asc") {
+    	     for(Account each:repository.findAll(Sort.by(Sort.Direction.ASC, sortBy))) {
+    	    	 roles.add(each.getRoles());
+//    	    	 Set<Integer> roleIds = new HashSet<Integer>();
+//    	    	 while(each.getRoles().iterator().hasNext()) {
+//    	    		 roleIds.add(each.getRoles().iterator().next().getId().intValue());
+//    	    	 }
+//    	    	 Collections.max(roleIds);
+    	    	 
+    	     }
+    	}else {
+    		for(Account each:repository.findAll(Sort.by(Sort.Direction.DESC, sortBy))) {
+    			roles.add(each.getRoles());
+   	     }
+    	}
+    	
+    	return roles;
   	
     }
     

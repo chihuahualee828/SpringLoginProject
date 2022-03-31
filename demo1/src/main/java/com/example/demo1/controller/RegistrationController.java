@@ -2,7 +2,9 @@ package com.example.demo1.controller;
 
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activation.MailcapCommandMap;
 import javax.validation.Valid;
@@ -28,6 +30,7 @@ import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.AccountRequest;
 import com.example.demo1.entity.AccountResponse;
+import com.example.demo1.entity.Role;
 import com.example.demo1.service.Demo1Service;
 
 
@@ -64,16 +67,41 @@ public class RegistrationController {
     @PostMapping("/register_page")
 //    @RequestMapping(value ="/register_page", method = RequestMethod.POST)
     public String createAccount(@Valid @ModelAttribute("account") Account account, ModelMap modelMap) {
-    	System.out.println(account);
-    	AccountRequest request=AccountConverter.toAccountRequest(account);
+    	
     	try {
-    		demo1Service.createAccount(request);
+			demo1Service.getAccountById(account.getId());
+			modelMap.addAttribute("errorMessage", "ID already exists.");
+			return "register";
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("ID valid");
+		}
+    	
+        Boolean emailBlank=false;
+        if(account.getEmailAddress()=="" || account.getEmailAddress()==null) {
+        	emailBlank=true;
+        }
+        
+        if(emailBlank==false) {
+        	try {
+            	demo1Service.getAccountByEmail(account.getEmailAddress());
+            	modelMap.addAttribute("errorMessage", "This email address is already used.");
+    			return "register";
+			} catch (Exception e) {
+				System.out.println(e);
+				System.out.println("Email valid");
+			}
+        }
+        
+    	try {
+    		demo1Service.createAccount(account);
+    		modelMap.addAttribute("errorMessage", "account succesfully created!");
 		} catch (Exception e) {
 			System.out.println(e);
 			modelMap.addAttribute("errorMessage", e);
-			return "register";
 		}
-        return "index";
+    	return "register";
+        
     }
     
 //    @PostMapping("/register_page")

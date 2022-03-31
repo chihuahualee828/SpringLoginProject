@@ -16,7 +16,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
+import com.sun.istack.NotNull;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,7 @@ import lombok.NoArgsConstructor;
 @Table(name="account")
 public class Account {
 	
+	@NotNull
 	@Id
 	@Column(name="id")
     private Long id;
@@ -35,9 +38,11 @@ public class Account {
 	@Column(name="email_address")
     private String emailAddress;
 	
+	@NotBlank
 	@Column(name="password")
     private String password;
 	
+	@NotBlank
 	@Column(name="name")
     private String name;
 	
@@ -125,6 +130,8 @@ public class Account {
     public void setIsActive(boolean isActive) {
     	this.isActive=isActive;
     }
+    
+    
     
     
     
