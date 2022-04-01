@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.View;
 import javax.validation.Valid;
 
 import org.json.JSONObject;
@@ -204,6 +205,39 @@ public class Demo1Controller {
 
     	return "view";
     }
+    
+    
+    @GetMapping("/search-by/{by}/{value}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public String searchBy(@PathVariable("by") String by, @PathVariable("value") String value, Model model) {
+    	
+    	
+    	System.out.println(by+" "+value);
+//    	if(value=="") {
+//			return "view";
+//    	}
+    	
+    	switch (by) {
+		case "id":
+			List<Account> accounts = new ArrayList<Account>();
+			try {
+				Account account = demo1Service.getAccountById(Long.valueOf(value));
+				accounts.add(account);
+			}catch (Exception e) {
+				System.out.println(e);
+			}
+			model.addAttribute("users", accounts);
+			break;
+		case "name":
+			model.addAttribute("users", demo1Service.getAccountsByName(value));
+			break;
+		default:
+			break;
+		}
+    	System.out.println(model.getAttribute("users"));
+    	return "view";
+    }
+    
     
     
 }

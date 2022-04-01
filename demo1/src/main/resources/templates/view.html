@@ -55,12 +55,13 @@ td {
 <body>
     
     <div>
-    	<input type="text" placeholder="Search.." >
+    	<input id="searchField" type="text" placeholder="Search.." >
     
-	    <select id="searchBy" onchange="searchBy();">
+	    <select id="searchBy" >
 	    	<option value="id">id</option>
 	    	<option value="name">name</option>
 	    </select>
+	    <button onclick="searchBy()">Search</button>
     </div>
     
     <div style="float:right;" >Sort by&nbsp;
@@ -82,11 +83,9 @@ td {
         </tr>
     </thead>
     <tbody>
-    	
     	<tr th:if="${users.empty}">
-            <td colspan="3"> No Available </td>
+            <td colspan="7"> No Available </td>
         </tr>
-        
         
         <tr th:each="user,iteration : ${users}"  th:id="'row' + ${user.id}"
         	th:class="${user.isActive} ? '' : 'greyout'"
@@ -152,15 +151,21 @@ td {
 	
 	$(function(){
 		var currentUrl = window.location.href;
-		var select = currentUrl.substring(currentUrl.lastIndexOf('/')+1);
-		console.log(select);
-		if(select=="view"){
-			document.getElementById("sortby").value="id";
+		if(currentUrl.indexOf('search-by/')==-1){
+			var select = currentUrl.substring(currentUrl.lastIndexOf('/')+1);
+			console.log(select);
+			if(select=="view"){
+				document.getElementById("sortby").value="id";
+			}else{
+				document.getElementById("sortby").value=select;
+			}
+			document.getElementById("searchBy").value="id";
 		}else{
-			document.getElementById("sortby").value=select;
+			var select2 = currentUrl.substring(currentUrl.indexOf('search-by/')+10,currentUrl.lastIndexOf('/'));
+			console.log(select2);
+			document.getElementById("searchBy").value=select2;
+			document.getElementById("sortby").value=select2;
 		}
-		
-		
 	});
 	
 	// edit user information other than isactive
@@ -305,6 +310,17 @@ td {
 	
 		console.log(x);
         window.location.href="/demo1/sortBy/"+x;
+	}
+	
+	function searchBy(){
+		
+		var value = document.getElementById("searchField").value;
+		var selected = document.getElementById("searchBy").value;
+		if(value!=null && value!=""){
+		
+			console.log(selected, value);
+			window.location.href="/demo1/search-by/"+selected+"/"+value;
+		}
 	}
 	
 </script>

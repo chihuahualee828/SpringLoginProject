@@ -18,10 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.standard.expression.Each;
 
-import com.example.demo1.converter.AccountConverter;
+import com.example.demo.service.MailService;
 import com.example.demo1.entity.Account;
-import com.example.demo1.entity.AccountRequest;
-import com.example.demo1.entity.AccountResponse;
 import com.example.demo1.entity.Role;
 import com.example.demo1.exception.NotFoundException;
 import com.example.demo1.exception.UnprocessableEntityException;
@@ -35,17 +33,16 @@ public class Demo1Service {
 	@Autowired
     private AccountRepository repository; // use DB
 	private BCryptPasswordEncoder passwordEncoder;
+	private MailService mailService;
     //delete @service and @autowired above to use this
 //    public Demo1Service(AccountRepository repository) {
 //        this.repository = repository;
 //    }
     
-//    @Autowired
-//    private MockProductDAO productDAO; // use list as database 
-    
-	public Demo1Service(AccountRepository repository) {
+	public Demo1Service(AccountRepository repository, MailService mailService) {
         this.repository = repository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.mailService = mailService;
     }
 	
 	
@@ -71,8 +68,12 @@ public class Demo1Service {
     	System.out.println("role: "+arr[0].getName());
         //encode password and then insert into repository
         //user.setPassword(request.getPassword());
+    	String decodedPassword = request.getPassword();
     	request.setPassword(passwordEncoder.encode(request.getPassword()));
     	request = repository.save(request);
+    	
+        mailService.sendCreateNewUserMail(request.getId().toString(), request.getName(), decodedPassword, request.getEmailAddress());
+
         
 //        return AccountConverter.toAccountResponse(user);
     }
@@ -93,7 +94,13 @@ public class Demo1Service {
     	Optional<Account> accountOptional = Optional.of(repository.findByEmailAddress(email));
     	return accountOptional
                 .orElseThrow(() -> new NotFoundException("Can't find email."));
-  }
+    }
+    
+    public List<Account> getAccountsByName(String name) {
+    	Optional<List<Account>> accountOptional = Optional.of(repository.findAccountsByName(name));
+    	return accountOptional
+                .orElseThrow(() -> new NotFoundException("Can't find name."));
+    }
     
     
     public void updateAccount(Account request) {
@@ -119,10 +126,10 @@ public class Demo1Service {
 //                .orElseThrow(() -> new NotFoundException("Can't find user."));
 //    }
 
-    public List<AccountResponse> getUserResponses() {
-        List<Account> users = repository.findAll();
-        return AccountConverter.toAccountResponses(users);
-    }
+//    public List<AccountResponse> getUserResponses() {
+//        List<Account> users = repository.findAll();
+//        return AccountConverter.toAccountResponses(users);
+//    }
 
 
     public List<Account> getAccounts() {
