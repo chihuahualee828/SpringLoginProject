@@ -31,9 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 
-import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
-import com.example.demo1.entity.AccountRequest;
 import com.example.demo1.entity.Role;
 import com.example.demo1.service.Demo1Service;
 
@@ -151,25 +149,31 @@ public class Demo1Controller {
     	System.out.println(keyString+" "+valueString);
     	
     	switch (keyString) {
-		case "id":
-			try {
-				demo1Service.getAccountById(Long.valueOf(valueString));
-				return new ResponseEntity<>("ID is already used.", new HttpHeaders(), HttpStatus.CONFLICT);
-			} catch (Exception e) {
-				Account newAccount = new Account();
-				newAccount.setId(Long.valueOf(valueString));
-				newAccount.setName(account.getName());
-				newAccount.setEmailAddress(account.getEmailAddress());
-				newAccount.setPassword(account.getPassword());
-				newAccount.setDisplayNmae(account.getDisplayName());
-				newAccount.setMobile(account.getMobile());
-				newAccount.setRoles(account.getRoles());
-				demo1Service.deleteAccount(Long.valueOf(id));
-				demo1Service.createAccount(newAccount);
-				return new ResponseEntity<>("updated",new HttpHeaders(), HttpStatus.OK);
-			}
+//		case "id":
+//			try {
+//				demo1Service.getAccountById(Long.valueOf(valueString));
+//				return new ResponseEntity<>("ID is already used.", new HttpHeaders(), HttpStatus.CONFLICT);
+//			} catch (Exception e) {
+//				Account newAccount = new Account();
+//				newAccount.setId(Long.valueOf(valueString));
+//				newAccount.setName(account.getName());
+//				newAccount.setEmailAddress(account.getEmailAddress());
+//				newAccount.setPassword(account.getPassword());
+//				newAccount.setDisplayNmae(account.getDisplayName());
+//				newAccount.setMobile(account.getMobile());
+//				newAccount.setRoles(account.getRoles());
+//				demo1Service.deleteAccount(Long.valueOf(id));
+//				demo1Service.createAccount(newAccount);
+//				return new ResponseEntity<>("updated",new HttpHeaders(), HttpStatus.OK);
+//			}
 		case "name":
-			account.setName(valueString);
+			
+			try {
+				demo1Service.getAccountByName(valueString);
+				return new ResponseEntity<>("This name is already used.", new HttpHeaders(), HttpStatus.CONFLICT);
+			} catch (Exception e) {
+				account.setName(valueString);
+			}
 			break;
 		case "emailAddress":
 			try {

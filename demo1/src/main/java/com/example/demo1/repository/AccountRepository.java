@@ -31,9 +31,14 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 //	@Query("from account a where a.name=:name")
 //    Account findUser(@Param("name") String name);
+//	@Transactional
+//	@Modifying
+//	@Query("update Account set is_active=?1 where id=?2")
+//	void updateActive(Boolean isactive, Long id);
+	
 	@Transactional
 	@Modifying
-	@Query("update Account set is_active=?1 where id=?2")
-	void updateActive(Boolean isactive, Long id);
-	
+	@Query(value = "insert into accounts_roles(account_id, role_id) values (:id1, :id2)",
+			nativeQuery = true)
+	void insertRelation(@Param("id1") Long id1, @Param("id2") Long id2);
 }

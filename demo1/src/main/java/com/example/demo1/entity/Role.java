@@ -30,7 +30,6 @@ public class Role {
     private Long id;
 	
 	
-	
 	@Column(name="Name")
     private String name;
 	

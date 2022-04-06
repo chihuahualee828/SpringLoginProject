@@ -26,10 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.demo1.converter.AccountConverter;
 import com.example.demo1.entity.Account;
-import com.example.demo1.entity.AccountRequest;
-import com.example.demo1.entity.AccountResponse;
 import com.example.demo1.entity.Role;
 import com.example.demo1.service.Demo1Service;
 
@@ -69,12 +66,12 @@ public class RegistrationController {
     public String createAccount(@Valid @ModelAttribute("account") Account account, ModelMap modelMap) {
     	
     	try {
-			demo1Service.getAccountById(account.getId());
-			modelMap.addAttribute("errorMessage", "ID already exists.");
+			demo1Service.getAccountByName(account.getName());
+			modelMap.addAttribute("errorMessage", "This user already exists.");
 			return "register";
 		} catch (Exception e) {
 			System.out.println(e);
-			System.out.println("ID valid");
+			System.out.println("Username valid");
 		}
     	
         Boolean emailBlank=false;
@@ -93,7 +90,15 @@ public class RegistrationController {
 			}
         }
         
+        
+        
     	try {
+//    		Role role=new Role();
+//            Set<Role> roles = new HashSet<>();
+////            role.setId(Long.valueOf(1));
+//            role.setName("USER");
+//            roles.add(role);
+//            account.setRoles(roles);
     		demo1Service.createAccount(account);
     		modelMap.addAttribute("errorMessage", "account succesfully created!");
 		} catch (Exception e) {

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.standard.expression.Each;
 
-import com.example.demo.service.MailService;
+import com.example.demo1.service.MailService;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.Role;
 import com.example.demo1.exception.NotFoundException;
@@ -50,28 +50,29 @@ public class Demo1Service {
 	public void createAccount(Account request) {
 		
 		
-        Role role=new Role();
-        Set<Role> roles = new HashSet<>();
-//        Account user = AccountConverter.toAccount(request);
-        role.setId(Long.valueOf(1));
-        role.setName("USER");
-        roles.add(role);
-        request.setRoles(roles);
+//        Role role=new Role();
+//        Set<Role> roles = new HashSet<>();
+////        Account user = AccountConverter.toAccount(request);
+////        role.setId(Long.valueOf(1));
+//        role.setName("USER");
+//        roles.add(role);
+//        request.setRoles(roles);
         
-        System.out.println(request.getId());
+//        System.out.println(request.getId());
         System.out.println(request.getName());
         System.out.println(request.getPassword());
         System.out.println(request.getEmailAddress());
         System.out.println(request.getMobile());
         System.out.println(request.getIsActive());
-        Role[] arr = request.getRoles().toArray(new Role[0]);
-    	System.out.println("role: "+arr[0].getName());
+//        Role[] arr = request.getRoles().toArray(new Role[0]);
+//    	System.out.println("role: "+arr[0].getName());
         //encode password and then insert into repository
         //user.setPassword(request.getPassword());
     	String decodedPassword = request.getPassword();
     	request.setPassword(passwordEncoder.encode(request.getPassword()));
     	request = repository.save(request);
-    	
+    	System.out.println(request.getId());
+    	repository.insertRelation(request.getId(), Long.valueOf(1));
         mailService.sendCreateNewUserMail(request.getId().toString(), request.getName(), decodedPassword, request.getEmailAddress());
 
         
@@ -94,6 +95,12 @@ public class Demo1Service {
     	Optional<Account> accountOptional = Optional.of(repository.findByEmailAddress(email));
     	return accountOptional
                 .orElseThrow(() -> new NotFoundException("Can't find email."));
+    }
+    
+    public Account getAccountByName(String name) {
+    	Optional<Account> accountOptional = Optional.of(repository.findByName(name));
+    	return accountOptional
+                .orElseThrow(() -> new NotFoundException("Can't find name."));
     }
     
     public List<Account> getAccountsByName(String name) {

@@ -73,8 +73,8 @@ td {
     <table>
     <thead>
         <tr>
+        	<th>ID</th>
             <th>Name</th>
-            <th>ID</th>
             <th>Password</th>
             <th>Email</th>
             <th>Mobile</th>
@@ -91,17 +91,20 @@ td {
         	th:class="${user.isActive} ? '' : 'greyout'"
         	th:classappend="${#authentication.getPrincipal().getUserId()} == ${user.id}  ? 'highlight':''"
         	>
-        	
-            <td>
-            	<input type="text" th:value="${user.name}" readonly="readonly" 
-            	class="input-transparent"
-            	ondblclick="doubleClick(this,'name')"/>
-            </td>
-            <td>
+        	<td th:text="${user.id}">ID</td>
+        	<!--  
+        	<td th:value="${user.id}">
             	<input type="text" th:id="'id'+${user.id}" th:value="${user.id}" readonly="readonly" 
             	class="input-transparent"
             	ondblclick="doubleClick(this,'id')"/>
             </td>
+            -->
+            <td>
+            	<input type="text" th:id="'name'+${user.id}" th:value="${user.name}" readonly="readonly" 
+            	class="input-transparent"
+            	ondblclick="doubleClick(this,'name')"/>
+            </td>
+            
             <td th:text="${user.password}">Password</td>
             <td >
             	<input type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
@@ -222,8 +225,10 @@ td {
 								if(key=="emailAddress"){
 									key="email";
 								}
-								document.getElementById(key+id).value=originalContent; // revert if input is not valid
 								alert(data.responseText);
+								document.getElementById(key+id).value=originalContent; // revert if input is not valid
+								console.log(originalContent);
+								
 							}
 						});
 			    	}

@@ -45,7 +45,7 @@ public class SpringUserService implements UserDetailsService {
 //        } catch (NotFoundException e) {
 //            throw new UsernameNotFoundException("ID is wrong.");
 //        }
-    	Optional<Account> accounts = accountRepository.findById(Long.valueOf(username));
+    	Optional<Account> accounts = Optional.of(accountRepository.findByName(username));
     	if (accounts.isEmpty()) {
             throw new UsernameNotFoundException("Could not find user");
         }

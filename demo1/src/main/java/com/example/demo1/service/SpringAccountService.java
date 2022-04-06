@@ -25,7 +25,7 @@ public class SpringAccountService implements UserDetailsService {
             
             return new User(account.getId().toString(), account.getPassword(), Collections.emptyList());
         } catch (NotFoundException e) {
-            throw new UsernameNotFoundException("ID is wrong.");
+            throw new UsernameNotFoundException("User name is wrong.");
         }
     }
     
