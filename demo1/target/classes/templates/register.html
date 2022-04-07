@@ -8,11 +8,21 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.container {
+  position: relative;
+  width: 70%;
+  margin: 0 auto;
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  padding: 10px 0 40px 0;
+} 
 </style>
 <meta charset="UTF-8">
 <title>登出</title>
 </head>
 <body>
+    <div class="container">
     <form style="margin: auto; width: 220px;" th:object="${account}" method="post">
         <h2>Create Account</h2>
         
@@ -43,6 +53,7 @@ input::-webkit-inner-spin-button {
         <!--<button onclick="submitForm()">Create</button>-->
         <button type="submit">Create</button>
     </form>
+    </div>
 </body>
 
 <script type="text/javascript">

@@ -9,30 +9,51 @@
     
 </head>
 <style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 table {
-  border: 1px solid black;
+  border: 10px solid black;
   border-collapse: collapse;
   transition-duration: 0.5s;
-  
+  border-radius: 1em;
+  table-layout: auto;
+  width: 100%; 
+  overflow: hidden;
 }
 .greyout {
-  background-color: lightgrey !important;
-  
+  background-color: #808080 !important;
 }
+
 th {
-  border: 3px solid black;
+  border: 3px solid white;
+  border-radius: 0.5em;
   padding: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
 }
 
 tr {
-  background-color: darkgrey;
+  background-color: white;
 }
+
+tr:nth-child(even){background-color: #f2f2f2;}
+tr:hover {background-color: #ddd;}
+
 .highlight {
   background-color: yellow !important;
 }
 
 td {
-  border: 1px solid black;
+  border: 1px solid white;
   padding: 5px;
 }
 
@@ -49,7 +70,9 @@ td {
 }
 
 
-
+select {
+	border-radius:20px;
+}
 
 </style>
 <body>
@@ -64,7 +87,7 @@ td {
 	    <button onclick="searchBy()">Search</button>
     </div>
     
-    <div style="float:right;" >Sort by&nbsp;
+    <div style="float:right;" >Sort by: &nbsp;
 	    <select id="sortby" onchange="sortBy();">
 	    	<option value="id">id</option>
 	    	<option value="name">name</option>
@@ -133,6 +156,7 @@ td {
 			    	<option value="user">USER</option>
 			    </select>
             </td>
+            
             <td th:each="role : ${user.roles}">
             	<select th:id="'role'+${user.id}"
             		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
@@ -142,6 +166,28 @@ td {
 			    	<option th:selected="(${role.name}=='ADMIN')" value="admin">ADMIN</option>
 			    </select>
             </td>
+            
+            <!--  
+            <td >
+            	<div>USER</div>
+	            <div>MANAGER</div>
+            	<div>ADMIN</div>
+            	
+            </td>
+            -->
+            
+            <!--
+            
+            <td>
+            	<select th:id="'role'+${user.id}"
+            		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
+            	 	onchange="selectRole(this, this.id);">
+			    	<option th:selected="${#lists.contains(user.roles, 'USER') and #lists.size(user.roles)==1}" value="user">USER</option>
+			    	<option th:selected="${#lists.contains(user.roles, 'MANAGER') and #lists.contains(user.roles, 'ADMIN')==false}" value="manager">MANAGER</option>
+			    	<option th:selected="${#lists.contains(user.roles, 'ADMIN')}" value="admin">ADMIN</option>
+			    </select>
+            </td>
+            -->
         </tr>
     </tbody>
 	</table>

@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-
+import com.example.demo1.config.MailProperty;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.Role;
 import com.example.demo1.service.Demo1Service;
@@ -103,32 +103,34 @@ public class Demo1Controller {
     	if(!account.getRoles().isEmpty()) {
         	System.out.println(account.getRoles().iterator().next().getName());
     	}
+    	System.out.println("User ID "+id + "add role: " + valueString);
     	
+//    	Role newRole = new Role();
+//    	switch (valueString) {
+//		case "USER":
+////			newRole.setId(Long.valueOf(1));
+//			newRole.setName("USER");
+//			break;
+//		case "MANAGER":
+////			newRole.setId(Long.valueOf(2));
+//			newRole.setName("MANAGER");
+//			break;
+//		case "ADMIN":
+////			newRole.setId(Long.valueOf(3));
+//			newRole.setName("ADMIN");
+//			break;
+//		default:
+//			break;
+//		}
     	
-    	Role newRole = new Role();
-    	switch (valueString) {
-		case "USER":
-			newRole.setId(Long.valueOf(1));
-			newRole.setName("USER");
-			break;
-		case "MANAGER":
-			newRole.setId(Long.valueOf(2));
-			newRole.setName("MANAGER");
-			break;
-		case "ADMIN":
-			newRole.setId(Long.valueOf(3));
-			newRole.setName("ADMIN");
-			break;
-		default:
-			break;
-		}
+//    	Set<Role> roleSet = new HashSet<Role>();
+//    	roleSet.add(newRole);
+//    	account.setRoles(roleSet);
     	
-    	Set<Role> roleSet = new HashSet<Role>();
-    	roleSet.add(newRole);
-    	account.setRoles(roleSet);
-    	System.out.println(account.getRoles().iterator().next().getName());
     	try {
-    		demo1Service.updateAccount(account);
+//    		demo1Service.updateAccount(account);
+    		demo1Service.accountRoleMap(Long.valueOf(id), valueString);
+    		
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -241,6 +243,8 @@ public class Demo1Controller {
     	System.out.println(model.getAttribute("users"));
     	return "view";
     }
+    
+    
     
     
     

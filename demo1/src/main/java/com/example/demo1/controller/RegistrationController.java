@@ -50,16 +50,7 @@ public class RegistrationController {
     }
     
     
-//    @PostMapping("/register_page")
-//    public String register(
-//            @RequestParam(name = "username", required = true) String name,
-//            @RequestParam(value = "userId", required = true) Long id,
-//            @RequestParam(value = "password", required = true) String password,
-//            @RequestParam(value = "mobile", required = false) int mobile,
-//            @RequestParam(value = "email", required = false) String email) {
-//        // set request attribute with key "name"
-//        return "login"; // forward to hello.html
-//    }
+
     
     @PostMapping("/register_page")
 //    @RequestMapping(value ="/register_page", method = RequestMethod.POST)

@@ -72,7 +72,8 @@ public class Demo1Service {
     	request.setPassword(passwordEncoder.encode(request.getPassword()));
     	request = repository.save(request);
     	System.out.println(request.getId());
-    	repository.insertRelation(request.getId(), Long.valueOf(1));
+//    	repository.insertRelation(request.getId(), Long.valueOf(1)); when using auto increment as PK
+    	repository.insertRelation(request.getId(), "USER"); //use Shared sequence as PK
         mailService.sendCreateNewUserMail(request.getId().toString(), request.getName(), decodedPassword, request.getEmailAddress());
 
         
@@ -162,6 +163,10 @@ public class Demo1Service {
     	     return repository.findAll(Sort.by(Sort.Direction.DESC, sortBy));
     	}
   	
+    }
+    
+    public void accountRoleMap(Long id, String role) {
+    	repository.insertRelation(id, role);
     }
     
     public List<Set<Role>> getRolesSort(String asc, String sortBy) {

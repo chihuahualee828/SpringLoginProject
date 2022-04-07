@@ -17,6 +17,24 @@ div.relative {
   position: relative;
 }
 
+.container {
+  position: relative;
+  width: 70%;
+  margin: 0 auto;
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  padding: 10px 0 40px 0;
+} 
+.row {
+
+  width: 100%;
+  width: 100%;
+  padding: 10px 0px 15px 0px;
+  margin: auto;
+  text-align:center;
+}
+
+
 </style>
 <body>
 <!--  
@@ -27,34 +45,41 @@ div.relative {
 	<input type="text" name="password" id="password">
     <button type="submit"> Login </button>
 -->
-	<div class="center" th:switch="${#authorization.expression('hasAuthority(''ACTIVE'')')}">
 	
-		<div th:case="true">
-		<div class="relative">
-			Welcome Back<b>
+	<div class="container" th:switch="${#authentication.getPrincipal().getIsActive()}">
+	<!-- ${#authorization.expression('hasAuthority(''ACTIVE'')')} -->
+		<div th:case="true" >
+			<div class="row"  style="font-size: 20px;">
+				Welcome Back<b>
+				
+				<span th:text ="${#authentication.getPrincipal().getUsername()}">
+				Username</span><!-- (<span th:text ="${#authentication.getPrincipal().getUserId()}">
+				id</span>) -->
+				
+				<span sec:authentication="principal.authorities">
+				Role</span>
+				</b>
+				<br>
+			</div>
 			
-			<span th:text ="${#authentication.getPrincipal().getUsername()}">
-			Username</span>(<span th:text ="${#authentication.getPrincipal().getUserId()}">
-			id</span>)
-			
-			<span sec:authentication="principal.authorities">
-			Role</span>
-			</b>
+		
+			<div class="row" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
+				<a href="view" >view all users</a><br>
+				<a href="register_page">Create Account</a>
+			</div>
 		</div>
-	
-		<div class="relative" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
-			<a href="view" >view all users</a>
-		</div>
-		</div>
+		
 		<div th:case="false">
 			You are not active
 		</div>
 		
-		<button id="" type="button" onclick="logout()">Logout</button>
 		
-		<div class="relative" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
-			<button type="button" onclick="creatAccountButton()">Create Account</button>
-		</div>
+		<div class="row">
+			<button type="button" onclick="logout()">Logout</button>
+			<form id="logoutForm" method="post" action="perform_logout">
+	        	<input type="hidden"  th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	        </form>
+        </div>
 		
 		
 	</div>
@@ -63,7 +88,15 @@ div.relative {
         src="webjars/jquery/2.2.4/jquery.min.js"></script>
 <script>
 	function logout() {
-		location.href = "logout_page";// logout_page : see controller
+		if(confirm("Sure you want to log out?")){
+			var form = document.getElementById('logoutForm');
+			form.submit();
+		}else{
+			return false;
+		}
+		//location.href = "logout_page";// logout_page : see controller
+		
+		
 	}
 	
 	function creatAccountButton() {

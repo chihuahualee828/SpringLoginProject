@@ -38,7 +38,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	@Transactional
 	@Modifying
-	@Query(value = "insert into accounts_roles(account_id, role_id) values (:id1, :id2)",
+	@Query(value = "insert into accounts_roles(account_id, role_id) values (:id1, select role_id from roles where name = :role )",
 			nativeQuery = true)
-	void insertRelation(@Param("id1") Long id1, @Param("id2") Long id2);
+	void insertRelation(@Param("id1") Long id1, @Param("role") String role);
 }

@@ -24,9 +24,9 @@ public class SpringUser implements UserDetails {
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
-        if(account.getIsActive()) {
-        	authorities.add(new SimpleGrantedAuthority("ACTIVE"));
-        }
+//        if(account.getIsActive()) {
+//        	authorities.add(new SimpleGrantedAuthority("ACTIVE"));
+//        }
          
         return authorities;
     }
@@ -48,6 +48,11 @@ public class SpringUser implements UserDetails {
     public String getEmailAddress() {
         return account.getEmailAddress();
     }
+    
+    public Boolean getIsActive() {
+        return account.getIsActive();
+    }
+    
 
     @Override
     public boolean isAccountNonExpired() {
