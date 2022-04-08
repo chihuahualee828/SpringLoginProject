@@ -168,6 +168,10 @@ public class Demo1Service {
     public void accountRoleMap(Long id, String role) {
     	repository.insertRelation(id, role);
     }
+    public void accountRoleDelete(Long id, String role) {
+    	repository.deleteRelation(id, role);
+    }
+    
     
     public List<Set<Role>> getRolesSort(String asc, String sortBy) {
     	List<Set<Role>> roles = new ArrayList<Set<Role>>();

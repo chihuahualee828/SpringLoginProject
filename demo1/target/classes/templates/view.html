@@ -73,6 +73,12 @@ td {
 select {
 	border-radius:20px;
 }
+ul {
+    list-style-type:none;
+}
+ul > li {
+    display: inline-block;
+}
 
 </style>
 <body>
@@ -102,7 +108,7 @@ select {
             <th>Email</th>
             <th>Mobile</th>
             <th>Active</th>
-            <th>Authority</th>
+            <th>Roles</th>
         </tr>
     </thead>
     <tbody>
@@ -156,7 +162,12 @@ select {
 			    	<option value="user">USER</option>
 			    </select>
             </td>
-            
+            <!-- 
+            <td >
+            	<div th:text="${user.roles[__${#lists.size(user.roles) - 1}__].name}"></div>
+            </td>
+            -->
+            <!--  
             <td th:each="role : ${user.roles}">
             	<select th:id="'role'+${user.id}"
             		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
@@ -166,29 +177,91 @@ select {
 			    	<option th:selected="(${role.name}=='ADMIN')" value="admin">ADMIN</option>
 			    </select>
             </td>
-            
-            <!--  
-            <td >
-            	<div>USER</div>
-	            <div>MANAGER</div>
-            	<div>ADMIN</div>
-            	
-            </td>
             -->
-            
+            <td>
+            <div>
+	            <ul class="checkboxes" th:if="${#lists.size(user.roles)==3}">
+				    <li th:each="role : ${user.roles}" th:if="${role.name}=='USER'">
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${role.name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li th:each="role : ${user.roles}" th:if="${role.name}=='MANAGER'">
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${role.name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    
+				    <li th:each="role : ${user.roles}" th:if="${role.name}=='ADMIN'">
+				      <input type="checkbox" th:id="'admin/'+${user.id}"
+				      		th:checked="${role.name}=='ADMIN'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        ADMIN
+				    </li>
+				    
+				 </ul>
+				 
+				 <ul class="checkboxes" th:if="${#lists.size(user.roles)==2}">
+				    <li>
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER' || ${user.roles[1].name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='MANAGER' || ${user.roles[1].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'admin/'+${user.id}"
+				      		th:checked="${user.roles[0].name}=='ADMIN' || ${user.roles[1].name}=='ADMIN'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        ADMIN
+				    </li>
+				 </ul>
+				   
+				   
+				   <ul class="checkboxes" th:if="${#lists.size(user.roles)==1}">
+				    <li >
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'admin/'+${user.id}"
+				      		th:checked="${user.roles[0].name}=='ADMIN'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        ADMIN
+				    </li>
+				   </ul>
+				    
+		     </div>
+             </td>
             <!--
             
             <td>
             	<select th:id="'role'+${user.id}"
             		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
             	 	onchange="selectRole(this, this.id);">
-			    	<option th:selected="${#lists.contains(user.roles, 'USER') and #lists.size(user.roles)==1}" value="user">USER</option>
+			    	<option th:selected="${#lists.contains(user.roles.name, 'USER') and #lists.size(user.roles)==1}" value="user">USER</option>
 			    	<option th:selected="${#lists.contains(user.roles, 'MANAGER') and #lists.contains(user.roles, 'ADMIN')==false}" value="manager">MANAGER</option>
 			    	<option th:selected="${#lists.contains(user.roles, 'ADMIN')}" value="admin">ADMIN</option>
 			    </select>
             </td>
             -->
         </tr>
+        
     </tbody>
 	</table>
 
@@ -215,6 +288,7 @@ select {
 			document.getElementById("searchBy").value=select2;
 			document.getElementById("sortby").value=select2;
 		}
+		
 	});
 	
 	// edit user information other than isactive
@@ -324,7 +398,39 @@ select {
 		});
 	}
 	
-	//changing authority 
+	//changing authority checkbox
+	function roleCheckBox(thisBox, id){
+		var x = thisBox.checked;
+		var token = $("meta[name='_csrf.parameterName']").attr("content");
+		
+		var role = id.substring(0, id.indexOf("/"));
+		var id = id.substring(id.indexOf("/")+1);
+		console.log(role, id);
+		const obj={
+				role: x
+			};
+		
+		$.ajaxSetup({
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader('X-CSRF-Token', token);
+	        }
+	    });
+    
+	    $.ajax({
+			type: "POST",
+			url: '/demo1/role/'.concat(id),
+			contentType: "application/json",
+		    data: JSON.stringify(obj),
+		    success:function(data) {
+				console.log("success " + data.result);
+			},
+			error:function(data) {
+				console.log("error " + JSON.stringify(data));
+			}
+		});
+	}
+	
+	//changing authority drop down menu
 	function selectRole(selected, id){
 		console.log(selected.value);
 		var token = $("meta[name='_csrf.parameterName']").attr("content");

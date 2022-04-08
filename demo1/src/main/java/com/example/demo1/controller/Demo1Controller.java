@@ -92,7 +92,7 @@ public class Demo1Controller {
     
     @PostMapping("/change-role/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void updateRole(@PathVariable("id") String id, @RequestBody String request) {
+    public void addRole(@PathVariable("id") String id, @RequestBody String request) {
 
     	Account account = demo1Service.getAccountById(Long.valueOf(id));
     	
@@ -134,6 +134,31 @@ public class Demo1Controller {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+    }
+    
+    @PostMapping("/role/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void updateRole(@PathVariable("id") String id, @RequestBody String request) {
+
+    	
+    	JSONObject jsonObject = new JSONObject(request);
+    	String keyString= jsonObject.keys().next().toString();
+    	String valueString=jsonObject.get(keyString).toString();
+    	if(valueString=="true") {
+    		try {
+        		demo1Service.accountRoleMap(Long.valueOf(id), keyString);
+        		
+    		} catch (Exception e) {
+    			System.out.println(e);
+    		}
+    	}else {
+    		try {
+        		demo1Service.accountRoleDelete(Long.valueOf(id), keyString);
+    		} catch (Exception e) {
+    			System.out.println(e);
+    		}
+    	}
+    	
     }
     
     
