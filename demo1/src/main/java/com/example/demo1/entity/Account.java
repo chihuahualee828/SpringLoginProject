@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
@@ -59,6 +60,7 @@ public class Account {
 	
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OrderBy("role_id")
     @JoinTable(
     		  name = "accounts_roles", 
     		  joinColumns = {@JoinColumn(name = "account_id", referencedColumnName = "id")}, 

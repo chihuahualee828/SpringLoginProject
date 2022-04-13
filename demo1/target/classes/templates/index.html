@@ -57,10 +57,15 @@ div.relative {
 				id</span>) -->
 				
 				<span sec:authentication="principal.authorities">
-				Role</span>
+				Role</span><br>
+				Email: <span th:text ="${#authentication.getPrincipal().getEmailAddress()}">email</span>
+				<br>
+				Mobile: <span th:text ="${#authentication.getPrincipal().getMobile()}">mobile</span>
 				</b>
 				<br>
+				
 			</div>
+			
 			
 		
 			<div class="row" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">

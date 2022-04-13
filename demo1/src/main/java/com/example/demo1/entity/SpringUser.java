@@ -5,9 +5,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 public class SpringUser implements UserDetails {
     private Account account;
@@ -16,6 +21,8 @@ public class SpringUser implements UserDetails {
         this.account = account;
     }
 
+    
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
     	Set<Role> roles = account.getRoles();
@@ -24,6 +31,7 @@ public class SpringUser implements UserDetails {
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
+        
 //        if(account.getIsActive()) {
 //        	authorities.add(new SimpleGrantedAuthority("ACTIVE"));
 //        }
@@ -51,6 +59,9 @@ public class SpringUser implements UserDetails {
     
     public Boolean getIsActive() {
         return account.getIsActive();
+    }
+    public int getMobile() {
+    	return account.getMobile();
     }
     
 

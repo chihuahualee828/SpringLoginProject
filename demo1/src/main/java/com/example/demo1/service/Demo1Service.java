@@ -173,27 +173,27 @@ public class Demo1Service {
     }
     
     
-    public List<Set<Role>> getRolesSort(String asc, String sortBy) {
-    	List<Set<Role>> roles = new ArrayList<Set<Role>>();
-    	if(asc=="asc") {
-    	     for(Account each:repository.findAll(Sort.by(Sort.Direction.ASC, sortBy))) {
-    	    	 roles.add(each.getRoles());
-//    	    	 Set<Integer> roleIds = new HashSet<Integer>();
-//    	    	 while(each.getRoles().iterator().hasNext()) {
-//    	    		 roleIds.add(each.getRoles().iterator().next().getId().intValue());
-//    	    	 }
-//    	    	 Collections.max(roleIds);
-    	    	 
-    	     }
-    	}else {
-    		for(Account each:repository.findAll(Sort.by(Sort.Direction.DESC, sortBy))) {
-    			roles.add(each.getRoles());
-   	     }
-    	}
-    	
-    	return roles;
-  	
-    }
+//    public List<Set<Role>> getRolesSort(String asc, String sortBy) {
+//    	List<Set<Role>> roles = new ArrayList<Set<Role>>();
+//    	if(asc=="asc") {
+//    	     for(Account each:repository.findAll(Sort.by(Sort.Direction.ASC, sortBy))) {
+//    	    	 roles.add(each.getRoles());
+////    	    	 Set<Integer> roleIds = new HashSet<Integer>();
+////    	    	 while(each.getRoles().iterator().hasNext()) {
+////    	    		 roleIds.add(each.getRoles().iterator().next().getId().intValue());
+////    	    	 }
+////    	    	 Collections.max(roleIds);
+//    	    	 
+//    	     }
+//    	}else {
+//    		for(Account each:repository.findAll(Sort.by(Sort.Direction.DESC, sortBy))) {
+//    			roles.add(each.getRoles());
+//   	     }
+//    	}
+//    	
+//    	return roles;
+//  	
+//    }
     
    
    

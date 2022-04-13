@@ -48,4 +48,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query(value = "delete from accounts_roles where account_id=:id1 and role_id=select role_id from roles where name=:role",
 			nativeQuery = true)
 	void deleteRelation(@Param("id1") Long id1, @Param("role") String role);
+	
+
+	
+	
 }

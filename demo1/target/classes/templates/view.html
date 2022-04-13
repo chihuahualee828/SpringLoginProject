@@ -4,8 +4,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta th:name="_csrf.parameterName" th:content="${_csrf.token}" />
-    
-    <title>Hello PostgreSQL</title>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <title>Hello</title>
     
 </head>
 <style>
@@ -18,7 +18,7 @@ body {
 }
 
 table {
-  border: 10px solid black;
+  border: 5px solid black;
   border-collapse: collapse;
   transition-duration: 0.5s;
   border-radius: 1em;
@@ -31,11 +31,8 @@ table {
 }
 
 th {
-  border: 3px solid white;
-  border-radius: 0.5em;
-  padding: 5px;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  
+  border-radius: 0.8em;
   text-align: left;
   background-color: #04AA6D;
   color: white;
@@ -45,8 +42,9 @@ tr {
   background-color: white;
 }
 
-tr:nth-child(even){background-color: #f2f2f2;}
-tr:hover {background-color: #ddd;}
+
+tr:not(.highlight):not(.greyout):nth-child(even){background-color: #f2f2f2;}
+tr:not(.highlight):not(.greyout):hover {background-color: #ddd !important;}
 
 .highlight {
   background-color: yellow !important;
@@ -80,17 +78,41 @@ ul > li {
     display: inline-block;
 }
 
+.up-arrow {
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    background: transparent;
+    border-bottom: solid 7px black;
+    border-top-width: 0;
+    cursor: pointer;
+}
+
+.down-arrow {
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    background: transparent;
+    border-top: solid 7px black;
+    border-bottom-width: 0;
+    margin-top:1px;
+    cursor: pointer;
+}
+
 </style>
 <body>
     
+    <!--  
     <div>
     	<input id="searchField" type="text" placeholder="Search.." >
-    
+    	
+    	
 	    <select id="searchBy" >
 	    	<option value="id">id</option>
 	    	<option value="name">name</option>
 	    </select>
 	    <button onclick="searchBy()">Search</button>
+	    
     </div>
     
     <div style="float:right;" >Sort by: &nbsp;
@@ -99,7 +121,8 @@ ul > li {
 	    	<option value="name">name</option>
 	    </select>
     </div>
-    <table>
+    -->
+    <table id="myTable">
     <thead>
         <tr>
         	<th>ID</th>
@@ -128,24 +151,80 @@ ul > li {
             	ondblclick="doubleClick(this,'id')"/>
             </td>
             -->
-            <td>
+            <td sec:authorize="!hasAuthority('ADMIN')">
+            	<div th:text="${user.name}" style="display:none"></div>
+	            <input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+	            	th:id="'name'+${user.id}" th:value="${user.name}" readonly="readonly"
+	            	class="input-transparent"
+	            	ondblclick="doubleClick(this,'name')"/>
+	            <input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+	            	th:value="${user.name}" readonly="readonly" class="input-transparent" style="outline:none;"/>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+            	<div th:text="${user.name}" style="display:none"></div>
             	<input type="text" th:id="'name'+${user.id}" th:value="${user.name}" readonly="readonly" 
-            	class="input-transparent"
-            	ondblclick="doubleClick(this,'name')"/>
+	            	class="input-transparent"
+	            	ondblclick="doubleClick(this,'name')"/>
             </td>
             
-            <td th:text="${user.password}">Password</td>
-            <td >
-            	<input type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
-            	class="input-transparent"
-            	ondblclick="doubleClick(this,'emailAddress')"/>
+           
+            <td sec:authorize="!hasAuthority('ADMIN')">
+            	<div th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'" 
+            		th:text="${user.password}">Password</div>
             </td>
-            <td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+            	<div th:text="${user.password}">Password</div>
+            </td>
+            
+            <td sec:authorize="!hasAuthority('ADMIN')">
+            	<div th:text="${user.emailAddress}" style="display:none"></div>
+            	<input th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+            	 type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
+            	 class="input-transparent"
+            	 ondblclick="doubleClick(this,'emailAddress')"/>
+            	<input th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+            	 type="text" th:value="${user.emailAddress}" readonly="readonly" class="input-transparent" style="outline:none;"/>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+            	<div th:text="${user.emailAddress}" style="display:none"></div>
+            	<input type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
+            	 class="input-transparent"
+            	 ondblclick="doubleClick(this,'emailAddress')"/>
+            </td>
+            
+            
+            <td sec:authorize="!hasAuthority('ADMIN')">
+            	<div th:text="${user.mobile}" style="display:none"></div>
+            	<input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+            	th:id="'mobile'+${user.id}" th:value="${user.mobile}" readonly="readonly" 
+            	class="input-transparent"
+            	ondblclick="doubleClick(this,'mobile')"/>
+            	<input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+            	th:value="${user.mobile}" readonly="readonly" class="input-transparent" style="outline:none;"/>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+            	<div th:text="${user.mobile}" style="display:none"></div>
             	<input type="text" th:id="'mobile'+${user.id}" th:value="${user.mobile}" readonly="readonly" 
             	class="input-transparent"
             	ondblclick="doubleClick(this,'mobile')"/>
             </td>
-            <td >
+            
+            
+            <td sec:authorize="!hasAuthority('ADMIN')">
+            	<div th:text="${user.isActive}" style="display:none"></div>
+            	<input type="checkbox"
+            		th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+	            	th:checked="${user.isActive}"
+	            	th:id="${user.id}"
+	            	th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
+	            	onchange="showCheckBox(this.id)"/>
+	            <input type="checkbox"
+            		th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+	            	th:checked="${user.isActive}"
+	            	th:disabled="true"/>
+            </td>
+            <td sec:authorize="hasAuthority('ADMIN')">
+            	<div th:text="${user.isActive}" style="display:none"></div>
             	<input type="checkbox"
 	            	th:checked="${user.isActive}"
 	            	th:id="${user.id}" 
@@ -154,7 +233,7 @@ ul > li {
 	            />
             </td>
             
-            
+            <!-- 
             <td th:if="${user.roles.empty}">
             	<select th:id="'role'+${user.id}"
             	 	onchange="selectRole(this, this.id);">
@@ -162,6 +241,8 @@ ul > li {
 			    	<option value="user">USER</option>
 			    </select>
             </td>
+            -->
+            
             <!-- 
             <td >
             	<div th:text="${user.roles[__${#lists.size(user.roles) - 1}__].name}"></div>
@@ -178,54 +259,52 @@ ul > li {
 			    </select>
             </td>
             -->
-            <td>
-            <div>
-	            <ul class="checkboxes" th:if="${#lists.size(user.roles)==3}">
-				    <li th:each="role : ${user.roles}" th:if="${role.name}=='USER'">
+            <td sec:authorize="!hasAuthority('ADMIN')">
+             <div th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'">
+             	<ul class="checkboxes" th:if="${user.roles.empty}">
+				    <li >
 				      <input type="checkbox" th:id="'user/'+${user.id}" 
-				      		th:checked="${role.name}=='USER'"
-				           onchange="roleCheckBox(this, this.id)"/>
-				        USER
-				    </li>
-				    <li th:each="role : ${user.roles}" th:if="${role.name}=='MANAGER'">
-				      <input type="checkbox" th:id="'manager/'+${user.id}" 
-				      		th:checked="${role.name}=='MANAGER'"
-				           onchange="roleCheckBox(this, this.id)"/>
-				        USER
-				    </li>
-				    
-				    <li th:each="role : ${user.roles}" th:if="${role.name}=='ADMIN'">
-				      <input type="checkbox" th:id="'admin/'+${user.id}"
-				      		th:checked="${role.name}=='ADMIN'"
-				           onchange="roleCheckBox(this, this.id)"/>
-				        ADMIN
-				    </li>
-				    
-				 </ul>
-				 
-				 <ul class="checkboxes" th:if="${#lists.size(user.roles)==2}">
-				    <li>
-				      <input type="checkbox" th:id="'user/'+${user.id}" 
-				      		th:checked="${user.roles[0].name}=='USER' || ${user.roles[1].name}=='USER'"
 				           onchange="roleCheckBox(this, this.id)"/>
 				        USER
 				    </li>
 				    <li>
 				      <input type="checkbox" th:id="'manager/'+${user.id}" 
-				      		th:checked="${user.roles[0].name}=='MANAGER' || ${user.roles[1].name}=='MANAGER'"
 				           onchange="roleCheckBox(this, this.id)"/>
 				        MANAGER
 				    </li>
+				</ul>
+	            <ul class="checkboxes" th:if="${#lists.size(user.roles)==3}">
 				    <li>
-				      <input type="checkbox" th:id="'admin/'+${user.id}"
-				      		th:checked="${user.roles[0].name}=='ADMIN' || ${user.roles[1].name}=='ADMIN'"
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER'"
 				           onchange="roleCheckBox(this, this.id)"/>
-				        ADMIN
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[1].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
+				    </li>
+				</ul>
+				 
+				<ul class="checkboxes" th:if="${#lists.size(user.roles)==2}">
+				    <li>
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='MANAGER' or ${user.roles[1].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
 				    </li>
 				 </ul>
 				   
 				   
-				   <ul class="checkboxes" th:if="${#lists.size(user.roles)==1}">
+				 <ul class="checkboxes" th:if="${#lists.size(user.roles)==1}">
 				    <li >
 				      <input type="checkbox" th:id="'user/'+${user.id}" 
 				      		th:checked="${user.roles[0].name}=='USER'"
@@ -236,18 +315,104 @@ ul > li {
 				      <input type="checkbox" th:id="'manager/'+${user.id}" 
 				      		th:checked="${user.roles[0].name}=='MANAGER'"
 				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
+				    </li>
+				 </ul>
+		     </div>
+		     <div th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'" 
+		     	style="text-align: center;">ADMIN
+		     </div>
+		     </td>
+		     
+		     <td sec:authorize="hasAuthority('ADMIN')">
+		     <div>
+             	<ul class="checkboxes" th:if="${user.roles.empty}">
+				    <li >
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				           onchange="roleCheckBox(this, this.id)"/>
 				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'admin/'+${user.id}"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        ADMIN
+				    </li>
+				</ul>
+	            <ul class="checkboxes" th:if="${#lists.size(user.roles)==3}">
+				    <li>
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[1].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'admin/'+${user.id}"
+				      		th:checked="${user.roles[2].name}=='ADMIN'"
+				      		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        ADMIN
+				    </li>
+				    
+				</ul>
+				 
+				<ul class="checkboxes" th:if="${#lists.size(user.roles)==2}">
+				    <li>
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='MANAGER' or ${user.roles[1].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'admin/'+${user.id}"
+				      		th:checked="${user.roles[1].name}=='ADMIN'"
+				      		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        ADMIN
+				    </li>
+				 </ul>
+				   
+				 <ul class="checkboxes" th:if="${#lists.size(user.roles)==1}">
+				    <li >
+				      <input type="checkbox" th:id="'user/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='USER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        USER
+				    </li>
+				    <li>
+				      <input type="checkbox" th:id="'manager/'+${user.id}" 
+				      		th:checked="${user.roles[0].name}=='MANAGER'"
+				           onchange="roleCheckBox(this, this.id)"/>
+				        MANAGER
 				    </li>
 				    <li>
 				      <input type="checkbox" th:id="'admin/'+${user.id}"
 				      		th:checked="${user.roles[0].name}=='ADMIN'"
+				      		th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
 				           onchange="roleCheckBox(this, this.id)"/>
 				        ADMIN
 				    </li>
-				   </ul>
-				    
+				 </ul>
 		     </div>
-             </td>
+            </td>
+            
+            
             <!--
             
             <td>
@@ -269,9 +434,19 @@ ul > li {
 </body>
 <script type="text/javascript"
         src="/demo1/webjars/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript"
+        src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>      
+        
 <script type="text/javascript">
-	
+
 	$(function(){
+		 $('#myTable').dataTable( {
+			  "columnDefs": [
+				    { "searchable": false,"orderable": false, "targets": 2 },
+				    { "searchable": false, "targets": 5 },
+				    { "searchable": false, "targets": 6 },
+				  ]
+				} );
 		var currentUrl = window.location.href;
 		if(currentUrl.indexOf('search-by/')==-1){
 			var select = currentUrl.substring(currentUrl.lastIndexOf('/')+1);
@@ -403,11 +578,11 @@ ul > li {
 		var x = thisBox.checked;
 		var token = $("meta[name='_csrf.parameterName']").attr("content");
 		
-		var role = id.substring(0, id.indexOf("/"));
+		var role = id.substring(0, id.indexOf("/")).toUpperCase();
 		var id = id.substring(id.indexOf("/")+1);
 		console.log(role, id);
 		const obj={
-				role: x
+				[role]: x
 			};
 		
 		$.ajaxSetup({

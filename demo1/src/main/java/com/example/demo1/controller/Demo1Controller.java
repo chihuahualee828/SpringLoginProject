@@ -15,6 +15,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -62,8 +68,10 @@ public class Demo1Controller {
 //    	}
 //    	model.addAttribute("users", accounts);
 //    	List<Account> accounts = new ArrayList<Account>();
+//    	accounts=demo1Service.getAccountsSort("asc","id");
 //    	Account account1 = new Account(Long.valueOf(6054), "BBB", "1233");
 //    	accounts.add(account1);
+
     	model.addAttribute("users", demo1Service.getAccountsSort("asc","id"));
     	//model.addAttribute("roles", demo1Service.getRolesSort("asc","id"));
     	//System.out.println(model.getAttribute("users"));
@@ -137,6 +145,7 @@ public class Demo1Controller {
     }
     
     @PostMapping("/role/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
     public void updateRole(@PathVariable("id") String id, @RequestBody String request) {
 
@@ -144,20 +153,39 @@ public class Demo1Controller {
     	JSONObject jsonObject = new JSONObject(request);
     	String keyString= jsonObject.keys().next().toString();
     	String valueString=jsonObject.get(keyString).toString();
+    	System.out.println(keyString + valueString);
+    	
+    	
+        
     	if(valueString=="true") {
     		try {
         		demo1Service.accountRoleMap(Long.valueOf(id), keyString);
-        		
+//        		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//                List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+//                updatedAuthorities.add(new SimpleGrantedAuthority(keyString));
+//                Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+//                SecurityContextHolder.getContext().setAuthentication(newAuth);
     		} catch (Exception e) {
     			System.out.println(e);
     		}
     	}else {
     		try {
         		demo1Service.accountRoleDelete(Long.valueOf(id), keyString);
+//        		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//                List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+//                for(GrantedAuthority each:updatedAuthorities) {
+//                	if(each.getAuthority()==keyString) {
+//                		updatedAuthorities.remove(each);
+//                	}
+//                }
+//                Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+//                SecurityContextHolder.getContext().setAuthentication(newAuth);
     		} catch (Exception e) {
     			System.out.println(e);
     		}
     	}
+    	
+    	
     	
     }
     
@@ -227,48 +255,48 @@ public class Demo1Controller {
 
     }
     
-    @GetMapping("/sortBy/{sort}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public String sortBy(@PathVariable("sort") String sort, Model model) {
-
-    	model.addAttribute("users", demo1Service.getAccountsSort("asc",sort));
-    	//model.addAttribute("roles", demo1Service.getRolesSort("asc",sort));
-
-    	return "view";
-    }
+//    @GetMapping("/sortBy/{sort}")
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public String sortBy(@PathVariable("sort") String sort, Model model) {
+//
+//    	model.addAttribute("users", demo1Service.getAccountsSort("asc",sort));
+//    	//model.addAttribute("roles", demo1Service.getRolesSort("asc",sort));
+//
+//    	return "view";
+//    }
+//    
     
-    
-    @GetMapping("/search-by/{by}/{value}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public String searchBy(@PathVariable("by") String by, @PathVariable("value") String value, Model model) {
-    	
-    	
-    	System.out.println(by+" "+value);
-//    	if(value=="") {
-//			return "view";
-//    	}
-    	
-    	switch (by) {
-		case "id":
-			List<Account> accounts = new ArrayList<Account>();
-			try {
-				Account account = demo1Service.getAccountById(Long.valueOf(value));
-				accounts.add(account);
-			}catch (Exception e) {
-				System.out.println(e);
-			}
-			model.addAttribute("users", accounts);
-			break;
-		case "name":
-			model.addAttribute("users", demo1Service.getAccountsByName(value));
-			break;
-		default:
-			break;
-		}
-    	System.out.println(model.getAttribute("users"));
-    	return "view";
-    }
-    
+//    @GetMapping("/search-by/{by}/{value}")
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public String searchBy(@PathVariable("by") String by, @PathVariable("value") String value, Model model) {
+//    	
+//    	
+//    	System.out.println(by+" "+value);
+////    	if(value=="") {
+////			return "view";
+////    	}
+//    	
+//    	switch (by) {
+//		case "id":
+//			List<Account> accounts = new ArrayList<Account>();
+//			try {
+//				Account account = demo1Service.getAccountById(Long.valueOf(value));
+//				accounts.add(account);
+//			}catch (Exception e) {
+//				System.out.println(e);
+//			}
+//			model.addAttribute("users", accounts);
+//			break;
+//		case "name":
+//			model.addAttribute("users", demo1Service.getAccountsByName(value));
+//			break;
+//		default:
+//			break;
+//		}
+//    	System.out.println(model.getAttribute("users"));
+//    	return "view";
+//    }
+//    
     
     
     
