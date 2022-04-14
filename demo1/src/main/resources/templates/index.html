@@ -3,6 +3,7 @@
     xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta th:name="_csrf.parameterName" th:content="${_csrf.token}" />
     <title>Index</title>
 </head>
 <style>
@@ -33,6 +34,21 @@ div.relative {
   margin: auto;
   text-align:center;
 }
+.input-transparent
+{
+    background: transparent;
+    border: none;
+    font-weight:bold;
+    font-size:25px;
+}
+
+.input
+{
+    border: none;
+    font-weight:bold;
+    font-size:25px;
+}
+
 
 
 </style>
@@ -52,8 +68,13 @@ div.relative {
 			<div class="row"  style="font-size: 20px;">
 				Welcome Back<b>
 				
-				<span th:text ="${#authentication.getPrincipal().getUsername()}">
-				Username</span><!-- (<span th:text ="${#authentication.getPrincipal().getUserId()}">
+				<input type="text" th:id="${#authentication.getPrincipal().getUserId()}" 
+				th:value="${#authentication.getPrincipal().getDisplayName()}" 
+				readonly="readonly" class="input-transparent" ondblclick="doubleClick(this,'displayName')" 
+				oninput="this.size = this.value.length" size="3"/>
+				(<span th:text ="${#authentication.getPrincipal().getUsername()}">
+				Username</span>)
+				<!-- (<span th:text ="${#authentication.getPrincipal().getUserId()}">
 				id</span>) -->
 				
 				<span sec:authentication="principal.authorities">
@@ -107,6 +128,61 @@ div.relative {
 	function creatAccountButton() {
 		location.href = "register_page";
 	}
+	
+	
+	function doubleClick(td, col){
+		var originalContent=td.value;
+		
+		if(!td.hasAttribute("readonly")){
+			td.setAttribute("readonly",true);
+			td.classList.add("input-transparent");
+			td.value=originalContent;
+		}else{
+			td.removeAttribute("readonly");
+			td.classList.remove("input-transparent");
+			td.classList.add("input");
+			td.addEventListener('keypress', function (e) {
+			    if (e.key === 'Enter') {
+			    	td.classList.remove('input');
+			    	td.setAttribute("readonly",true);
+					td.classList.add("input-transparent");
+			    	var id = td.id
+			    	var content = td.value;
+			    	var key = col;
+			    	
+			    	if(content!=originalContent){
+				    	var token = $("meta[name='_csrf.parameterName']").attr("content");
+						$.ajaxSetup({
+					        beforeSend: function(xhr) {
+					            xhr.setRequestHeader('X-CSRF-Token', token);
+					        }
+					    });
+					    $.ajax({
+							type: "POST",
+							url: '/demo1/save/'.concat(id),
+							contentType: "application/json",
+						    data: JSON.stringify({
+						    	[key]: content
+						    }),
+						    
+						    success:function(data) {
+								console.log("success " + JSON.stringify(data));
+							},
+							error:function(data) {
+								alert(data.responseText);
+								document.getElementById(key+id).value=originalContent; // revert if input is not valid
+								
+							}
+						});
+			    	}
+				    
+			    	console.log(id, key, content);
+			    	td.replaceWith(td.cloneNode(true));
+			    }
+			});
+		}
+	}
+	
 	
 	/**
 	function redirectName() {

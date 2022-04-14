@@ -64,6 +64,9 @@ public class SpringUser implements UserDetails {
     	return account.getMobile();
     }
     
+    public String getDisplayName() {
+    	return account.getDisplayName();
+    }
 
     @Override
     public boolean isAccountNonExpired() {

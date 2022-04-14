@@ -3,6 +3,7 @@ package com.example.demo1.controller;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -39,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.demo1.config.MailProperty;
 import com.example.demo1.entity.Account;
 import com.example.demo1.entity.Role;
+import com.example.demo1.entity.SpringUser;
 import com.example.demo1.service.Demo1Service;
 
 @Controller
@@ -52,30 +55,28 @@ public class Demo1Controller {
     
     @GetMapping("/view")
     public String getAllAccounts(Model model) {
-//    	ModelAndView mav = new ModelAndView();
-//		mav.addObject("accounts", demo1Service.getAccounts());
-//    	List<Object> accountList=new ArrayList<Object>();
-//    	for(Account each : demo1Service.getAccounts()) {
-//    		List<Object> eachAccountList=new ArrayList<Object>();
-//    		eachAccountList.add(each.getId());
-//    		eachAccountList.add(each.getName());
-//    		eachAccountList.add(each.getPassword());
-//    		accountList.add(eachAccountList);
-//    	}
-//    	List<Account> accounts=new ArrayList<Account>();
-//    	for(int i = 0; i<=3; i++) {
-//    		accounts.add(new Account());
-//    	}
-//    	model.addAttribute("users", accounts);
-//    	List<Account> accounts = new ArrayList<Account>();
-//    	accounts=demo1Service.getAccountsSort("asc","id");
-//    	Account account1 = new Account(Long.valueOf(6054), "BBB", "1233");
-//    	accounts.add(account1);
 
     	model.addAttribute("users", demo1Service.getAccountsSort("asc","id"));
     	//model.addAttribute("roles", demo1Service.getRolesSort("asc","id"));
     	//System.out.println(model.getAttribute("users"));
     	return "view";
+    }
+    
+    @GetMapping("/")
+    public String updateSpringUser() {
+    	
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	String id = ((SpringUser)auth.getPrincipal()).getUserId();
+    	SpringUser springUser = new SpringUser(demo1Service.getAccountById(Long.valueOf(id)));
+
+    	
+    	Authentication newAuth = new UsernamePasswordAuthenticationToken(springUser, springUser.getPassword(), springUser.getAuthorities());
+    	System.out.println(newAuth.getName());
+    	System.out.println(newAuth.getCredentials());
+    	System.out.println(newAuth.getAuthorities());
+    	SecurityContextHolder.getContext().setAuthentication(newAuth);
+    	
+    	return "index";
     }
     
     
@@ -241,6 +242,9 @@ public class Demo1Controller {
 			break;
 		case "mobile":
 			account.setMobile(Integer.valueOf(valueString));
+			break;
+		case "displayName":
+			account.setDisplayNmae(valueString);
 			break;
 		default:
 			break;
