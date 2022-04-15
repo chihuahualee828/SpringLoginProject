@@ -23,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -50,12 +51,9 @@ public class Demo1Controller {
 	
 	@Autowired
 	private Demo1Service demo1Service;
-	
-    
     
     @GetMapping("/view")
     public String getAllAccounts(Model model) {
-
     	model.addAttribute("users", demo1Service.getAccountsSort("asc","id"));
     	//model.addAttribute("roles", demo1Service.getRolesSort("asc","id"));
     	//System.out.println(model.getAttribute("users"));
@@ -68,7 +66,7 @@ public class Demo1Controller {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	String id = ((SpringUser)auth.getPrincipal()).getUserId();
     	SpringUser springUser = new SpringUser(demo1Service.getAccountById(Long.valueOf(id)));
-
+    	
     	
     	Authentication newAuth = new UsernamePasswordAuthenticationToken(springUser, springUser.getPassword(), springUser.getAuthorities());
     	System.out.println(newAuth.getName());
@@ -78,6 +76,10 @@ public class Demo1Controller {
     	
     	return "index";
     }
+    
+    
+    
+    
     
     
 
@@ -114,28 +116,7 @@ public class Demo1Controller {
     	}
     	System.out.println("User ID "+id + "add role: " + valueString);
     	
-//    	Role newRole = new Role();
-//    	switch (valueString) {
-//		case "USER":
-////			newRole.setId(Long.valueOf(1));
-//			newRole.setName("USER");
-//			break;
-//		case "MANAGER":
-////			newRole.setId(Long.valueOf(2));
-//			newRole.setName("MANAGER");
-//			break;
-//		case "ADMIN":
-////			newRole.setId(Long.valueOf(3));
-//			newRole.setName("ADMIN");
-//			break;
-//		default:
-//			break;
-//		}
-    	
-//    	Set<Role> roleSet = new HashSet<Role>();
-//    	roleSet.add(newRole);
-//    	account.setRoles(roleSet);
-    	
+
     	try {
 //    		demo1Service.updateAccount(account);
     		demo1Service.accountRoleMap(Long.valueOf(id), valueString);

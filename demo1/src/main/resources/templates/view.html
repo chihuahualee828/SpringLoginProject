@@ -19,6 +19,7 @@ body {
 
 table {
   border: 5px solid black;
+  border-top: 3px solid black;
   border-collapse: collapse;
   transition-duration: 0.5s;
   border-radius: 1em;
@@ -179,15 +180,15 @@ ul > li {
             <td sec:authorize="!hasAuthority('ADMIN')">
             	<div th:text="${user.emailAddress}" style="display:none"></div>
             	<input th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
-            	 type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
+            	 type="email" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
             	 class="input-transparent"
             	 ondblclick="doubleClick(this,'emailAddress')"/>
             	<input th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
-            	 type="text" th:value="${user.emailAddress}" readonly="readonly" class="input-transparent" style="outline:none;"/>
+            	 type="email" th:value="${user.emailAddress}" readonly="readonly" class="input-transparent" style="outline:none;"/>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
             	<div th:text="${user.emailAddress}" style="display:none"></div>
-            	<input type="text" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
+            	<input type="email" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
             	 class="input-transparent"
             	 ondblclick="doubleClick(this,'emailAddress')"/>
             </td>
