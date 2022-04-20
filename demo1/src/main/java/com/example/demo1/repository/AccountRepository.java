@@ -29,12 +29,16 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	List<Account> findByNameLikeIgnoreCase(String name, Sort sort);
 	Sort sort = Sort.by(Sort.Direction.ASC, "price");
 	
+	Account findByResetPasswordToken(String token);
+	
 //	@Query("from account a where a.name=:name")
 //    Account findUser(@Param("name") String name);
 //	@Transactional
 //	@Modifying
 //	@Query("update Account set is_active=?1 where id=?2")
 //	void updateActive(Boolean isactive, Long id);
+	
+	
 	
 	@Transactional
 	@Modifying

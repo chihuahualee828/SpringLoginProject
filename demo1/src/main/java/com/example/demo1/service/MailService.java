@@ -1,5 +1,6 @@
 package com.example.demo1.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.mail.MessagingException;
 
 import org.springframework.stereotype.Service;
 
@@ -97,7 +99,7 @@ public class MailService {
     }
     
     //Used in demo1 service
-    public void sendCreateNewUserMail(String id, String name, String password, String receiverEmail) {
+    public void sendCreateNewUserMail(String id, String name, String password, String receiverEmail){
     	String mailContent = "Your id: " + id + "\n" +  "Your username: " + name + "\n" 
     			+ "Your pssword: " +password;
     	
@@ -105,10 +107,13 @@ public class MailService {
         sendMail("User Created", mailContent,
                 Collections.singletonList(receiverEmail));
     }
-    public void sendDeleteProductMail(String productId) {
-        String content = String.format("There's a product deleted (%s).", productId);
-        sendMail("Product Deleted", content,
-                Collections.singletonList(LOG_EMAIL));
+    public void sendResetPasswordMail(String name, String link, String receiverEmail) {
+    	String mailContent = "Hi " + name + ": "+ "\n" 
+    			+ "Your pssword reset link(valid for 24 hours): " +link;
+    	
+        System.out.println("receiver:"+receiverEmail);
+        sendMail("Password Reset", mailContent,
+                Collections.singletonList(receiverEmail));
     }
     
     

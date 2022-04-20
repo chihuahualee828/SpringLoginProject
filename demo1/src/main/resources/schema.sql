@@ -15,12 +15,14 @@ CREATE TABLE IF NOT EXISTS account (
 	PRIMARY KEY(id)
 );
 
+
 CREATE TABLE IF NOT EXISTS roles (
 	role_id bigint DEFAULT IdSequence.nextval PRIMARY KEY,
 --	role_id bigint NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255) NOT NULL UNIQUE,
 	PRIMARY KEY(role_id)
 );
+
 
 CREATE TABLE IF NOT EXISTS accounts_roles (
 	account_id bigint NOT NULL,

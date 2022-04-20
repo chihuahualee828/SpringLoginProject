@@ -58,6 +58,8 @@ public class Account {
 	@Column(name="is_active", columnDefinition="tinyint(1) default 1")
     private boolean isActive=true;
 	
+	@Column(name = "reset_password_token")
+    private String resetPasswordToken;
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@OrderBy("role_id")
@@ -134,6 +136,14 @@ public class Account {
     public void setIsActive(boolean isActive) {
     	this.isActive=isActive;
     }
+
+	public String getResetPasswordToken() {
+		return resetPasswordToken;
+	}
+
+	public void setResetPasswordToken(String resetPasswordToken) {
+		this.resetPasswordToken = resetPasswordToken;
+	}
     
     
     

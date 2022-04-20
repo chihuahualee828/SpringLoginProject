@@ -1,13 +1,17 @@
 package com.example.demo1.service;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -20,6 +24,7 @@ import org.thymeleaf.standard.expression.Each;
 
 import com.example.demo1.service.MailService;
 import com.example.demo1.entity.Account;
+import com.example.demo1.entity.PasswordResetToken;
 import com.example.demo1.entity.Role;
 import com.example.demo1.exception.NotFoundException;
 import com.example.demo1.exception.UnprocessableEntityException;
@@ -59,11 +64,11 @@ public class Demo1Service {
 //        request.setRoles(roles);
         
 //        System.out.println(request.getId());
-        System.out.println(request.getName());
-        System.out.println(request.getPassword());
-        System.out.println(request.getEmailAddress());
-        System.out.println(request.getMobile());
-        System.out.println(request.getIsActive());
+//        System.out.println(request.getName());
+//        System.out.println(request.getPassword());
+//        System.out.println(request.getEmailAddress());
+//        System.out.println(request.getMobile());
+//        System.out.println(request.getIsActive());
 //        Role[] arr = request.getRoles().toArray(new Role[0]);
 //    	System.out.println("role: "+arr[0].getName());
         //encode password and then insert into repository
@@ -75,7 +80,6 @@ public class Demo1Service {
 //    	repository.insertRelation(request.getId(), Long.valueOf(1)); when using auto increment as PK
     	repository.insertRelation(request.getId(), "USER"); //use Shared sequence as PK
         mailService.sendCreateNewUserMail(request.getId().toString(), request.getName(), decodedPassword, request.getEmailAddress());
-
         
 //        return AccountConverter.toAccountResponse(user);
     }
@@ -113,14 +117,18 @@ public class Demo1Service {
     
     public void updateAccount(Account request) {
     	
-    	Account account=getAccountById(request.getId());
-//    	account.setIsActive(request.getIsActive());
-//    	System.out.println(account.getId());
-//    	System.out.println(account.getIsActive());
-    	repository.save(account);
+//    	Account account=getAccountById(request.getId());
+    	repository.save(request);
 //    	return AccountConverter.toAccountResponse(account);
     }
-    
+    public void updatePassword(Account account, String newPassword) {
+        passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        account.setPassword(encodedPassword);
+         
+        account.setResetPasswordToken(null);
+        repository.save(account);
+    }
     
     
 //    public AccountResponse getAccountResponseById(Long id) {
@@ -171,6 +179,39 @@ public class Demo1Service {
     public void accountRoleDelete(Long id, String role) {
     	repository.deleteRelation(id, role);
     }
+    
+//    public void createPasswordResetTokenForUser(Account account, String token) {
+//        PasswordResetToken myToken = new PasswordResetToken(token, account);
+//        passwordTokenRepository.save(myToken);
+//        
+//    }
+//	private void constructResetTokenEmail(
+//	  String contextPath, Locale locale, String token, Account account) {
+//	    String url = contextPath + "/user/changePassword?token=" + token;
+//	    String message = messages.getMessage("message.resetPassword", 
+//	      null, locale);
+//	    mailService.sendMail("Reset Password",);
+//	}
+    
+    public void updateResetPasswordToken(String token,Account account) throws NotFoundException {
+        if (account != null) {
+        	account.setResetPasswordToken(token);
+            repository.save(account);
+        } else {
+            throw new NotFoundException("Could not find account ");
+        }
+        
+    }
+     
+    public Account getByResetPasswordToken(String token) {
+        return repository.findByResetPasswordToken(token);
+    }
+    
+    public void sendResetPasswordLink(String username, String link, String receiver) 
+    		throws MessagingException, UnsupportedEncodingException {
+    	mailService.sendResetPasswordMail(username, link, receiver);
+    }
+     
     
     
 //    public List<Set<Role>> getRolesSort(String asc, String sortBy) {
