@@ -41,6 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login_page","/perform_login","/forgot_pass","/reset_pass").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
+                .csrf().ignoringAntMatchers("/h2-console/**") //so can log into h2-console 
+                .and()
+                .headers().frameOptions().disable() // so h2-console page will not be blank
+                .and()
                 //.csrf().disable()
                 .formLogin()
 	                .loginPage("/login_page")
