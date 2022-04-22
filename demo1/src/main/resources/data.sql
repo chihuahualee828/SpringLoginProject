@@ -1,4 +1,4 @@
-MERGE INTO account(id,name, password, is_active, mobile) KEY(name) VALUES (1,'ada', 
+MERGE INTO account(name, password, is_active, mobile) KEY(name) VALUES ('ada', 
 '$2a$10$XScjdSCyyU9xnyJCxCSPReasj/z0K7xv8aipy7hNoUoTZddndWO8e', true, 0);
  
 MERGE INTO roles (name) KEY(name) VALUES ('USER');
