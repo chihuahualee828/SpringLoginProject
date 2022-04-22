@@ -2,31 +2,18 @@ package com.example.demo1.service;
 
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.thymeleaf.standard.expression.Each;
 
-import com.example.demo1.service.MailService;
 import com.example.demo1.entity.Account;
-import com.example.demo1.entity.Role;
 import com.example.demo1.exception.NotFoundException;
-import com.example.demo1.exception.UnprocessableEntityException;
 import com.example.demo1.repository.AccountRepository;
 
 

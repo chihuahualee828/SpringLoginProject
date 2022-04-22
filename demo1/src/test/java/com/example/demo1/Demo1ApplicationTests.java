@@ -1,23 +1,15 @@
 package com.example.demo1;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.catalina.User;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import lombok.extern.slf4j.Slf4j;
-
+import com.example.demo1.repository.AccountRepository;
 //import com.example.demo1.service.AccountService;
 import com.example.demo1.service.Demo1Service;
-import com.example.demo1.converter.AccountConverter;
-import com.example.demo1.entity.Account;
-import com.example.demo1.entity.Role;
-import com.example.demo1.repository.AccountRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -51,7 +43,7 @@ class Demo1ApplicationTests {
 //    	account1.setRoles(roles);
 //    	accountRepository.save(account1);
 
-    	accountRepository.updateActive(false, Long.valueOf(2223));
+    	//accountRepository.updateActive(false, Long.valueOf(2223));
     	//System.out.println(accountRepository.findById(Long.valueOf(2222)).get().getName());
     	
         // 測試findAll, 查詢所有記錄

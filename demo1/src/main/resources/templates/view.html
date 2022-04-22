@@ -128,7 +128,9 @@ ul > li {
         <tr>
         	<th>ID</th>
             <th>Name</th>
+            <!--  
             <th>Password</th>
+            -->
             <th>Email</th>
             <th>Mobile</th>
             <th>Active</th>
@@ -154,11 +156,11 @@ ul > li {
             -->
             <td sec:authorize="!hasAuthority('ADMIN')">
             	<div th:text="${user.name}" style="display:none"></div>
-	            <input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+	            <input type="text" th:if="${#lists.size(user.roles)}==0 or ${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
 	            	th:id="'name'+${user.id}" th:value="${user.name}" readonly="readonly"
 	            	class="input-transparent"
 	            	ondblclick="doubleClick(this,'name')"/>
-	            <input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+	            <input type="text" th:if="${#lists.size(user.roles)}!=0 and ${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
 	            	th:value="${user.name}" readonly="readonly" class="input-transparent" style="outline:none;"/>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
@@ -168,22 +170,23 @@ ul > li {
 	            	ondblclick="doubleClick(this,'name')"/>
             </td>
             
-           
+            <!--  
             <td sec:authorize="!hasAuthority('ADMIN')">
-            	<div th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'" 
+            	<div th:if="${#lists.size(user.roles)}==0 or ${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'" 
             		th:text="${user.password}">Password</div>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
             	<div th:text="${user.password}">Password</div>
             </td>
+            -->
             
             <td sec:authorize="!hasAuthority('ADMIN')">
             	<div th:text="${user.emailAddress}" style="display:none"></div>
-            	<input th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+            	<input th:if="${#lists.size(user.roles)}==0 or ${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
             	 type="email" th:id="'email'+${user.id}" th:value="${user.emailAddress}" readonly="readonly" 
             	 class="input-transparent"
             	 ondblclick="doubleClick(this,'emailAddress')"/>
-            	<input th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+            	<input th:if="${#lists.size(user.roles)}!=0 and ${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
             	 type="email" th:value="${user.emailAddress}" readonly="readonly" class="input-transparent" style="outline:none;"/>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
@@ -196,11 +199,11 @@ ul > li {
             
             <td sec:authorize="!hasAuthority('ADMIN')">
             	<div th:text="${user.mobile}" style="display:none"></div>
-            	<input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+            	<input type="text" th:if="${#lists.size(user.roles)}==0 or ${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
             	th:id="'mobile'+${user.id}" th:value="${user.mobile}" readonly="readonly" 
             	class="input-transparent"
             	ondblclick="doubleClick(this,'mobile')"/>
-            	<input type="text" th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+            	<input type="text" th:if="${#lists.size(user.roles)}!=0 and ${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
             	th:value="${user.mobile}" readonly="readonly" class="input-transparent" style="outline:none;"/>
             </td>
             <td sec:authorize="hasAuthority('ADMIN')">
@@ -214,13 +217,13 @@ ul > li {
             <td sec:authorize="!hasAuthority('ADMIN')">
             	<div th:text="${user.isActive}" style="display:none"></div>
             	<input type="checkbox"
-            		th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
+            		th:if="${#lists.size(user.roles)}==0 or ${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'"
 	            	th:checked="${user.isActive}"
 	            	th:id="${user.id}"
 	            	th:disabled="${#authentication.getPrincipal().getUserId()} == ${user.id}"
 	            	onchange="showCheckBox(this.id)"/>
 	            <input type="checkbox"
-            		th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
+            		th:if="${#lists.size(user.roles)}!=0 and ${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'"
 	            	th:checked="${user.isActive}"
 	            	th:disabled="true"/>
             </td>
@@ -261,7 +264,7 @@ ul > li {
             </td>
             -->
             <td sec:authorize="!hasAuthority('ADMIN')">
-             <div th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'">
+             <div th:if="${#lists.size(user.roles)}==0 or ${user.roles[__${#lists.size(user.roles) - 1}__].name}!='ADMIN'">
              	<ul class="checkboxes" th:if="${user.roles.empty}">
 				    <li >
 				      <input type="checkbox" th:id="'user/'+${user.id}" 
@@ -320,7 +323,7 @@ ul > li {
 				    </li>
 				 </ul>
 		     </div>
-		     <div th:if="${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'" 
+		     <div th:if="${#lists.size(user.roles)}!=0 and ${user.roles[__${#lists.size(user.roles) - 1}__].name}=='ADMIN'" 
 		     	style="text-align: center;">ADMIN
 		     </div>
 		     </td>
@@ -443,9 +446,9 @@ ul > li {
 	$(function(){
 		 $('#myTable').dataTable( {
 			  "columnDefs": [
-				    { "searchable": false,"orderable": false, "targets": 2 },
+				    //{ "searchable": false,"orderable": false, "targets": 2 },
+				    { "searchable": false, "targets": 4 },
 				    { "searchable": false, "targets": 5 },
-				    { "searchable": false, "targets": 6 },
 				  ]
 				} );
 		var currentUrl = window.location.href;
