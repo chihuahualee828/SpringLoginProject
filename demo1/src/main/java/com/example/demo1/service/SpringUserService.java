@@ -50,13 +50,17 @@ public class SpringUserService implements UserDetailsService {
             throw new UsernameNotFoundException("Could not find user");
         }
     	Account account=accounts.get();
-    	if(!account.getIsActive()) {
-            throw new UsernameNotFoundException("Not Active");
+
+    	SpringUser user = new SpringUser(account);
+    	System.out.println(user.isEnabled());
+    	System.out.println(user.isAccountNonExpired());
+    	
+    	if(!user.isEnabled()) {
+    		System.out.println("not active");
+//            throw new UsernameNotFoundException("Not Active");
     	}
-    	
-    	
     	//return new User(account.getId().toString(),account.getPassword(),Collections.emptyList());
-        return new SpringUser(account);
+        return user;
     	
     }
     

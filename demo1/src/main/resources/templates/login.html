@@ -97,6 +97,9 @@ input[type=submit]:hover, input[type=button]:hover {
     <div class="row">
     	<div style="text-align:center">
     	<div th:text="${message}"></div>
+    	<!-- 
+    	<div th:text="${#request.session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION')}"></div>
+    	-->
         <span th:unless="${param.error == null}" th:text="${param.error} + '登入失敗'"></span>
         <span th:unless="${param.logout == null}" th:text="你已經登出">你已經登出</span>
         </div>

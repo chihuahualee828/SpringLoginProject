@@ -20,10 +20,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
     private SpringUserService userDetailsService; // inject springUserService to invoke loadUserByUsername
 	
-	@Autowired
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-	    return new BCryptPasswordEncoder();
-	}
+//	@Autowired
+//	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+//	    return new BCryptPasswordEncoder();
+//	}
+
 	
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -45,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .headers().frameOptions().disable() // so h2-console page will not be blank
                 .and()
+                
                 //.csrf().disable()
                 .formLogin()
 	                .loginPage("/login_page")
@@ -66,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(userDetailsService) 
-                .passwordEncoder(bCryptPasswordEncoder());
+                .passwordEncoder(new BCryptPasswordEncoder());
         
     }
 }

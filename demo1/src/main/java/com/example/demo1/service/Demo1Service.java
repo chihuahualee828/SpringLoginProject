@@ -24,7 +24,6 @@ import org.thymeleaf.standard.expression.Each;
 
 import com.example.demo1.service.MailService;
 import com.example.demo1.entity.Account;
-import com.example.demo1.entity.PasswordResetToken;
 import com.example.demo1.entity.Role;
 import com.example.demo1.exception.NotFoundException;
 import com.example.demo1.exception.UnprocessableEntityException;

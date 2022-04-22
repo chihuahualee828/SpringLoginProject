@@ -54,7 +54,6 @@ public class LoginOutController {
     
     @GetMapping("/login_page?logout")
     public String logout_sucess() {
-    	
     	return "index";
     }
     
