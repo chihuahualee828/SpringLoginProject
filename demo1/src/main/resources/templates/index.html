@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta th:name="_csrf.parameterName" th:content="${_csrf.token}" />
     <title>Index</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <style>
 .center {
@@ -18,19 +19,21 @@ div.relative {
   position: relative;
 }
 
+
 .container {
   position: relative;
   width: 70%;
   margin: 0 auto;
+  margin-top: 50px;
   border-radius: 10px;
   background-color: #f2f2f2;
   padding: 10px 0 40px 0;
 } 
+
 .row {
 
   width: 100%;
-  width: 100%;
-  padding: 10px 0px 15px 0px;
+  padding: 30px 0px 15px 0px;
   margin: auto;
   text-align:center;
 }
@@ -53,22 +56,22 @@ table {
   border: 5px solid transparent;
   border-collapse: collapse;
   transition-duration: 0.5s;
-  border-radius: 1em;
+  border-radius: 0.7em;
   table-layout: auto;
-  width: 70%;
+  width: 80%;
   overflow: hidden;
   margin-left: auto;
   margin-right: auto;
   margin-top: 30px;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
   
 }
 
 th {
   border: 3px solid white;
-  border-radius: 0.8em;
+  border-radius: 0.5em;
   text-align: center;
-  background-color: #04AA6D;
+  background-color: #198754;
   color: white;
   padding: 5px, 0px, 5px, 0px;
   font-size:15px;
@@ -95,19 +98,52 @@ td {
 	<input type="text" name="password" id="password">
     <button type="submit"> Login </button>
 -->
-	
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		  <div class="container-fluid">
+	    <a class="navbar-brand" href="" th:text="${#authentication.getPrincipal().getDisplayName()}">Home</a>
+	    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
+	    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+	        <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="">Index</a>
+	        </li>
+	        <li class="nav-item" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
+	          <a class="nav-link" href="view">View</a>
+	        </li>
+	        <li class="nav-item" sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')">
+	          <a class="nav-link" href="register_page">Create</a>
+	        </li>
+	      </ul>
+	      <div class="d-flex">
+			<button type="button" onclick="logout()" style="border-radius: 8px;" class="btn btn-outline-success">Logout</button>
+			<form id="logoutForm" method="post" action="perform_logout">
+	        	<input type="hidden"  th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	        </form>
+          </div>
+          
+	    </div>
+	  </div>
+	</nav>
+
 	<div class="container" th:switch="${#authentication.getPrincipal().getIsActive()}">
 	<!-- ${#authorization.expression('hasAuthority(''ACTIVE'')')} -->
+		
+		
 		<div th:case="true" >
-			<div class="row"  style="font-size: 20px;">
-				Welcome Back<b>
-				
+			<div class="row"  style="font-size: 30px;">
+				<a>
+				Welcome Back
+				<b>
 				<input type="text" th:id="${#authentication.getPrincipal().getUserId()}" 
 				th:value="${#authentication.getPrincipal().getDisplayName()}" 
 				readonly="readonly" class="input-transparent" ondblclick="doubleClick(this,'displayName')" 
 				oninput="this.size = this.value.length-1" size="3"/>
 				</b>
+				</a>
 			</div>
+			
 			<table id="myTable">
 			    <thead>
 			        <tr>
@@ -142,18 +178,19 @@ td {
 		</div>
 		
 		
-		<div class="row">
-			<button type="button" onclick="logout()" style="border-radius: 8px;">Logout</button>
+		<div style="text-align:center;">
+			<button type="button" onclick="logout()" style="border-radius: 8px;" class="btn btn-outline-success">Logout</button>
 			<form id="logoutForm" method="post" action="perform_logout">
 	        	<input type="hidden"  th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 	        </form>
         </div>
 		
-		
 	</div>
 </body>
 <script type="text/javascript"
         src="webjars/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" ></script>
 <script>
 	function logout() {
 		if(confirm("Sure you want to log out?")){
