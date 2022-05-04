@@ -37,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //              .antMatchers(HttpMethod.POST, "/users").permitAll()
 //              .antMatchers("/").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                 .antMatchers("/view","/register_page").hasAnyAuthority("MANAGER", "ADMIN")
+                .antMatchers("/h2-console/*").hasAnyAuthority("ADMIN")
                 .antMatchers("/login_page","/perform_login","/forgot_pass","/reset_pass").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()

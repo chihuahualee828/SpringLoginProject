@@ -125,6 +125,9 @@ ul > li {
 	        <li class="nav-item">
 	          <a class="nav-link" href="register_page">Create</a>
 	        </li>
+	        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+	          <a class="nav-link" href="h2-console">H2</a>
+	        </li>
 	      </ul>
 	      <div class="d-flex">
 			<button type="button" onclick="logout()" style="border-radius: 8px;" class="btn btn-outline-success">Logout</button>
