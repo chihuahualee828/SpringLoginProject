@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<link rel="stylesheet" th:href="@{/css/chat.css}"/>
 <title>Spring Boot WebSocket Chat Application | CalliCoder</title>
-<link rel="stylesheet" href="/css/main.css" />
 </head>
 <body
 	style="background-position: center; background-repeat: no-repeat; background-size: cover;">
@@ -43,6 +44,7 @@
 						<input type="text" id="message" placeholder="Type a message..."
 							autocomplete="off" class="form-control" />
 						<button type="submit" class="primary">Send</button>
+						<button type="button" class="primary" onclick="leave()">Leave</button>
 					</div>
 				</div>
 			</form>
@@ -72,14 +74,12 @@
 	
 		function connect(event) {
 		    username = document.querySelector('#name').value.trim();
-	
 		    if(username) {
 		        usernamePage.classList.add('hidden');
 		        chatPage.classList.remove('hidden');
 	
-		        var socket = new SockJS('/demo1');
+		        var socket = new SockJS('/demo1/chatroom');
 		        stompClient = Stomp.over(socket);
-	
 		        stompClient.connect({}, onConnected, onError);
 		    }
 		    event.preventDefault();
@@ -87,13 +87,13 @@
 	
 	
 		function onConnected() {
+			console.log("fsdfdssdsdf");
 		    // Subscribe to the Public Topic
 		    stompClient.subscribe('/topic/public', onMessageReceived);
-	
 		    // Tell your username to the server
-		    stompClient.send("/app/chat.register",
+		    stompClient.send("/app/join",
 		        {},
-		        JSON.stringify({sender: username, type: 'JOIN'})
+		        JSON.stringify({senderName: username, status: 'JOIN'})
 		    )
 	
 		    connectingElement.classList.add('hidden');
@@ -111,41 +111,57 @@
 	
 		    if(messageContent && stompClient) {
 		        var chatMessage = {
-		            sender: username,
-		            content: messageInput.value,
-		            type: 'CHAT'
+		        	senderName: username,
+		        	content: messageInput.value,
+		            status: 'MESSAGE'
 		        };
-	
 		        stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
 		        messageInput.value = '';
 		    }
 		    event.preventDefault();
 		}
-	
+		
+		function leave() {
+		    
+		    if(stompClient) {
+		        var chatMessage = {
+		        	senderName: username,
+		            status: 'LEAVE'
+		        };
+		        stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+		        stompClient.disconnect();
+		        chatPage.classList.add('hidden');
+		        usernamePage.classList.remove('hidden');
+		        
+		    }
+		    event.preventDefault();
+		}
+		
 	
 		function onMessageReceived(payload) {
+			
 		    var message = JSON.parse(payload.body);
-	
+		    
 		    var messageElement = document.createElement('li');
-	
-		    if(message.type === 'JOIN') {
+			
+			
+		    if(message.status === 'JOIN') {
 		        messageElement.classList.add('event-message');
-		        message.content = message.sender + ' joined!';
-		    } else if (message.type === 'LEAVE') {
+		        message.content = message.senderName + ' joined!';
+		    } else if (message.status === 'LEAVE') {
 		        messageElement.classList.add('event-message');
-		        message.content = message.sender + ' left!';
+		        message.content = message.senderName + ' left!';
 		    } else {
+		    	console.log(message);
 		        messageElement.classList.add('chat-message');
-	
 		        var avatarElement = document.createElement('i');
-		        var avatarText = document.createTextNode(message.sender[0]);
+		        var avatarText = document.createTextNode(message.senderName[0]);
 		        avatarElement.appendChild(avatarText);
-		        avatarElement.style['background-color'] = getAvatarColor(message.sender);
-	
+		        avatarElement.style['background-color'] = getAvatarColor(message.senderName);
 		        messageElement.appendChild(avatarElement);
 	
 		        var usernameElement = document.createElement('span');
-		        var usernameText = document.createTextNode(message.sender);
+		        var usernameText = document.createTextNode(message.senderName);
 		        usernameElement.appendChild(usernameText);
 		        messageElement.appendChild(usernameElement);
 		    }

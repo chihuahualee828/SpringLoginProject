@@ -1,18 +1,13 @@
 package com.example.demo1.entity;
 
-import org.hibernate.engine.internal.StatisticalLoggingSessionEventListener;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Message {
 	private String senderName;
-	private String receiverName;
-	private String message;
-	private String date;
+//	private String receiverName;
+	private String content;
+//	private String date;
 	private Status status;
 	public enum Status {
 		JOIN,
@@ -25,24 +20,24 @@ public class Message {
 	public void setSenderName(String senderName) {
 		this.senderName = senderName;
 	}
-	public String getReceiverName() {
-		return receiverName;
+//	public String getReceiverName() {
+//		return receiverName;
+//	}
+//	public void setReceiverName(String receiverName) {
+//		this.receiverName = receiverName;
+//	}
+	public String getContent() {
+		return content;
 	}
-	public void setReceiverName(String receiverName) {
-		this.receiverName = receiverName;
+	public void setContent(String content) {
+		this.content = content;
 	}
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
-	}
+//	public String getDate() {
+//		return date;
+//	}
+//	public void setDate(String date) {
+//		this.date = date;
+//	}
 	public Status getStatus() {
 		return status;
 	}
