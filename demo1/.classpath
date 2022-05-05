@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/example/demo1/config/WebConfig.java|com/example/demo1/service/SpringAccountService.java|com/example/demo1/entity/AccountRequest.java|com/example/demo1/entity/AccountResponse.java|com/example/demo1/entity/AccountRole.java|com/example/demo1/converter/AccountConverter.java|com/example/demo1/entity/AccountDetails.java|com/example/demo1/entity/PasswordResetToken.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="com/example/demo1/config/WebConfig.java|com/example/demo1/service/SpringAccountService.java|com/example/demo1/entity/AccountRequest.java|com/example/demo1/entity/AccountResponse.java|com/example/demo1/entity/AccountRole.java|com/example/demo1/converter/AccountConverter.java|com/example/demo1/entity/AccountDetails.java|com/example/demo1/entity/PasswordResetToken.java|com/example/demo1/config/ConcurrentSessionControlStrategy.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

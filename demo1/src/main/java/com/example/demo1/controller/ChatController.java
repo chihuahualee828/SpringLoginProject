@@ -14,10 +14,10 @@ import com.example.demo1.entity.Message;
 @Controller
 public class ChatController {
 	
-	@GetMapping("/chat")
-    public String chat_page() {
-        return "chat";
-    }
+//	@GetMapping("/chat")
+//    public String chat_page() {
+//        return "chat";
+//    }
 
 	@MessageMapping("/join")
 	@SendTo("/topic/public")

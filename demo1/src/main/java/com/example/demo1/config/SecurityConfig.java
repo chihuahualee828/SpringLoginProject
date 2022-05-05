@@ -1,12 +1,19 @@
 package com.example.demo1.config;
 
+import java.security.PublicKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.example.demo1.service.SpringUserService;
 
@@ -22,11 +29,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 //	    return new BCryptPasswordEncoder();
 //	}
-
+	
 	
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http	
+        		
                 .authorizeRequests()
                 //ADMIN 才可以看到所有使用者
                 //.antMatchers(HttpMethod.GET, "/users").hasAuthority(UserAuthority.ADMIN.name())
@@ -58,9 +66,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 	.logoutUrl("/perform_logout")
                 	.logoutSuccessUrl("/login_page?logout")
-                	.deleteCookies("JSESSIONID");
-        			
+                	.deleteCookies("JSESSIONID")
+        		.and()
+		        .sessionManagement()
+				.maximumSessions(1)
+				.sessionRegistry(sessionRegistry())
+				.maxSessionsPreventsLogin(true);
+			
                 
+    }
+    
+    @Bean
+    public SessionRegistry sessionRegistry() {
+    	SessionRegistry sessionRegistry = new SessionRegistryImpl();
+    	return sessionRegistry;
+    }
+    
+    @Bean
+    public static ServletListenerRegistrationBean httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean(new HttpSessionEventPublisher());
     }
     
     @Override
