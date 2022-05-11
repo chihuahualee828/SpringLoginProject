@@ -11,7 +11,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Service;
 
 import com.example.demo1.entity.SpringUser;
-import com.example.demo1.exception.UnprocessableEntityException;
 
 @Service
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{

@@ -208,6 +208,9 @@ td {
 	        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
 	          <a class="nav-link" href="h2-console">H2</a>
 	        </li>
+	        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+	          <a class="nav-link" href="settings">Settings</a>
+	        </li>
 	      </ul>
 	      <div class="d-flex">
 			<button type="button" onclick="logout()" style="border-radius: 8px;" class="btn btn-outline-success">Logout</button>

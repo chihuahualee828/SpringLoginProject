@@ -2,7 +2,7 @@ package com.example.demo1.entity;
 
 
 
-
+//for chat
 public class Message {
 	private String senderName;
 //	private String receiverName;
