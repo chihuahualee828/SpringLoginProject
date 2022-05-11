@@ -1,20 +1,29 @@
 package com.example.demo1.config;
 
-import java.security.PublicKey;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import com.example.demo1.entity.SpringUser;
+import com.example.demo1.exception.UnprocessableEntityException;
+import com.example.demo1.service.CustomLoginSuccessHandler;
+import com.example.demo1.service.CustomLogoutHandler;
 import com.example.demo1.service.SpringUserService;
 
 //(debug = true)
@@ -25,6 +34,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
     private SpringUserService userDetailsService; // inject springUserService to invoke loadUserByUsername
 	
+	@Autowired
+    private CustomLogoutHandler customLogoutHandler;
+	
+	@Autowired
+	private CustomLoginSuccessHandler customLoginSuccessHandler;
 //	@Autowired
 //	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 //	    return new BCryptPasswordEncoder();
@@ -58,20 +72,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
 	                .loginPage("/login_page")
 	                .loginProcessingUrl("/perform_login")
-//	                .failureUrl("/login_page?errorrrr")
+	                .successHandler(customLoginSuccessHandler)
+	                .failureUrl("/login_page?error")
 //	                .usernameParameter("username")
 //	                .passwordParameter("password")
 //	                .permitAll()
                 .and()
                 .logout()
                 	.logoutUrl("/perform_logout")
+                	.addLogoutHandler(customLogoutHandler)
                 	.logoutSuccessUrl("/login_page?logout")
                 	.deleteCookies("JSESSIONID")
         		.and()
 		        .sessionManagement()
-				.maximumSessions(1)
-				.sessionRegistry(sessionRegistry())
-				.maxSessionsPreventsLogin(true);
+					.maximumSessions(1)
+						.maxSessionsPreventsLogin(true)
+						.sessionRegistry(sessionRegistry());
+			
 			
                 
     }
@@ -79,13 +96,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public SessionRegistry sessionRegistry() {
     	SessionRegistry sessionRegistry = new SessionRegistryImpl();
+    	System.out.println(SpringUser.loggedIn);
     	return sessionRegistry;
     }
-    
+//    
     @Bean
-    public static ServletListenerRegistrationBean httpSessionEventPublisher() {
-        return new ServletListenerRegistrationBean(new HttpSessionEventPublisher());
+    public static HttpSessionEventPublisher httpSessionEventPublisher() {
+    	return new HttpSessionEventPublisher();    
     }
+    
+    
+    
     
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
