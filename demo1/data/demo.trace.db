@@ -2361,3 +2361,9 @@ Caused by: java.lang.IllegalStateException: The file is locked: nio:C:/Users/nic
 	at org.h2.mvstore.FileStore.open(FileStore.java:172)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:381)
 	... 62 more
+2022-05-11 17:43:59 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "SYSTEMMAIL" not found; SQL statement:
+SELECT * FROM SYSTEMMAIL [42102-200]
+2022-05-11 17:50:43 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "SYSTACCOUNT" not found; SQL statement:
+SELECT * FROM SYSTACCOUNT EMMAIL [42102-200]
