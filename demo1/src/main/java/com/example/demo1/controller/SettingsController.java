@@ -56,11 +56,11 @@ public class SettingsController {
     }
     
     
-	@GetMapping("/settings")
+	@GetMapping("/system")
 	public String getUser(Model model) {
 		SystemMail systemMail = demo1Service.getSystemMail();
 		model.addAttribute("email", systemMail);
-		return "settings";
+		return "system_settings";
 	}
 	
 	
